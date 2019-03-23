@@ -20,4 +20,12 @@
 #define W 800
 #define H 600
 
-int main(int argc, const char * argv[]);
+void init(int argc, const char **pString, Segment segment, int n, Segment *pSegment);
+
+void drawMirrors(int n, Segment *pSegment);
+
+void drawRay(Segment segment);
+
+void reflectRay(int n, Segment *mirrors, Segment ray, Segment ray0);
+
+int main(int argc, const char *argv[]);

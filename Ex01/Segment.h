@@ -2,24 +2,22 @@
 // Segment.h
 // Header file for Segment class
 //
-// Author: Jürgen Vogl <codewerfer>
+// Author: JÃ¼rgen Vogl <codewerfer>
 // Last Modification: 23.03.2019
 //
-// (c) Jürgen Vogl, 2019
+// (c) JÃ¼rgen Vogl, 2019
 // ----------------------------------------------------------
 
 #pragma once
 
 
-class Segment
-{
+class Segment {
 public:
-	struct Point
-	{
-		double x;
-		double y;
-	};
+    struct Point {
+        double x;
+        double y;
+    };
 
-	Point start;
-	Point end;
+    Point start;
+    Point end;
 };
