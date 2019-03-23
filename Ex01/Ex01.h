@@ -20,6 +20,4 @@
 #define W 800
 #define H 600
 
-//*
-
 int main(int argc, const char * argv[]);
