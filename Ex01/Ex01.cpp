@@ -16,9 +16,7 @@ using namespace compsys;
 int main(int argc, const char *argv[]) {
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 
-  Segment ray;
-  int n;
-  Segment *mirrors;
+  Segment ray; int n; Segment *mirrors;
   init(argc, argv, ray, n, mirrors);
   drawMirrors(n, mirrors);
   for (int i = 0; i < T; i++) {
@@ -33,9 +31,9 @@ int main(int argc, const char *argv[]) {
   endDrawing();
 }
 
-void init(options option, const char **filename, Segment ray,
-          int n, Segment *mirrors) {
-  switch (option) {
+void init(int option, const char **filename,
+          Segment &ray, int &mirrorCount, Segment *mirrors) {
+  switch (options(option)) {
     case RANDOM_INPUT:
       // random end points for ray
       // N + 4 mirrors
@@ -49,18 +47,19 @@ void init(options option, const char **filename, Segment ray,
       // load from filename.
       break;
     default:
-      cout << "Invalid argument count.";
+      cout << "Invalid argument.";
   }
 }
 
-void drawMirrors(int n, Segment *pSegment) {
+void drawMirrors(int mirrorCount, Segment *mirrors) {
 
 }
 
-void drawRay(Segment segment) {
+void drawRay(Segment ray) {
 
 }
 
-void reflectRay(int n, Segment *mirrors, Segment ray, Segment ray0) {
+void reflectRay(int mirrorCount, Segment *mirrors, Segment ray,
+                Segment &rayflection) {
 
 }

@@ -24,15 +24,18 @@
 // iteration, how often the ray will be reflected
 #define T 50
 
-enum options {RANDOM_INPUT=1, FILE_INPUT=2};
+enum options {
+  RANDOM_INPUT = 1, FILE_INPUT = 2
+};
 
-void init(options option, const char **filename, Segment ray,
-        int n, Segment *mirrors);
+void init(/*in*/ int option, const char **filename,
+        /*out*/ Segment &ray, int &mirrorCount, Segment *mirrors);
 
-void drawMirrors(int n, Segment *pSegment);
+void drawMirrors(int mirrorCount, Segment *mirrors);
 
-void drawRay(Segment segment);
+void drawRay(Segment ray);
 
-void reflectRay(int n, Segment *mirrors, Segment ray, Segment ray0);
+void reflectRay(/*in*/ int mirrorCount, Segment *mirrors, Segment ray,
+        /*out*/ Segment &rayflection);
 
 int main(int argc, const char *argv[]);

@@ -10,16 +10,13 @@
 
 #pragma once
 
-
 class Segment {
 public:
-    struct Point {
-        double x;
-        double y;
-    };
+  struct Point {
+    double x;
+    double y;
+  };
 
-    Point start;
-    Point end;
-
-
+  Point start;
+  Point end;
 };
