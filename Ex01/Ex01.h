@@ -17,10 +17,17 @@
 #include "Drawing.h"
 #include "Segment.h"
 
+// width of window
 #define W 800
+// height of window
 #define H 600
+// iteration, how often the ray will be reflected
+#define T 50
 
-void init(int argc, const char **pString, Segment segment, int n, Segment *pSegment);
+enum options {RANDOM_INPUT=1, FILE_INPUT=2};
+
+void init(options option, const char **filename, Segment ray,
+        int n, Segment *mirrors);
 
 void drawMirrors(int n, Segment *pSegment);
 
