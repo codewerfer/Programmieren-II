@@ -24,18 +24,39 @@
 // iteration, how often the ray will be reflected
 #define T 50
 
-enum options {
+// random room definitions - as used with argc 1
+// number of mirrors
+#define N 2
+// number of walls
+#define WALLCOUNT 4
+// room boundaries
+#define P0 0,   0
+#define P1 W-1, 0
+#define P2 W-1, H-1
+#define P3 0,   H-1
+
+
+enum options
+{
   RANDOM_INPUT = 1, FILE_INPUT = 2
 };
 
 void init(/*in*/ int option, const char **filename,
-        /*out*/ Segment &ray, int &mirrorCount, Segment *mirrors);
+        /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
-void drawMirrors(int mirrorCount, Segment *mirrors);
+void drawMirrors(int mirrorCount, Segment mirrors[]);
 
 void drawRay(Segment ray);
 
-void reflectRay(/*in*/ int mirrorCount, Segment *mirrors, Segment ray,
+void reflectRay(/*in*/ int mirrorCount, Segment mirrors[], Segment ray,
         /*out*/ Segment &rayflection);
+
+void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
+
+// rand between min (incl.) and max (excl.)
+int rand(int min, int max);
+
+// rand from 0 to max (excl.)
+int rand(int max) { return rand(0, max); }
 
 int main(int argc, const char *argv[]);
