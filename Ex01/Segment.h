@@ -69,10 +69,10 @@ private:
   double det() const;
 
   // determinate of determinate between a and b
-  double det(Point a, Point b) const;
+  static double det(Point a, Point b);
 
   // determinate of segment
-  double det(Segment segment) const;
+  static double det(Segment segment);
 };
 
 double Segment::Point::getX() const { return x; }
@@ -96,7 +96,7 @@ double Segment::distance(Segment::Point p) const {
          / norm();
 }
 
-double Segment::det(Segment::Point a, Segment::Point b) const {
+double Segment::det(Segment::Point a, Segment::Point b) {
   return a.getX() * b.getY() - a.getY() * b.getX();
 }
 
@@ -112,6 +112,6 @@ Segment::Point Segment::getEndPoint() const {
   return endPoint;
 }
 
-double Segment::det(Segment segment) const {
-  return 0;
+double Segment::det(Segment segment) {
+  return segment.det();
 }
