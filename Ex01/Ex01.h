@@ -14,6 +14,12 @@
 #include <cstdlib>
 #include <cmath>
 
+#ifdef _WIN32
+
+#include <ctime>
+
+#endif
+
 #include "Drawing.h"
 #include "Segment.h"
 
@@ -35,9 +41,10 @@
 #define P2 W-1, H-1
 #define P3 0,   H-1
 
+using namespace std;
+using namespace compsys;
 
-enum options
-{
+enum options {
   RANDOM_INPUT = 1, FILE_INPUT = 2
 };
 
@@ -51,12 +58,27 @@ void drawRay(Segment ray);
 void reflectRay(/*in*/ int mirrorCount, Segment mirrors[], Segment ray,
         /*out*/ Segment &rayflection);
 
+// inits a random ray, random mirrors and set mirrorCount to N+4
+// ray and mirrors have a length of least 1 and values between 0 and W for x
+// and 0 and H for y
 void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
+
+// inits ray, mirrorCount and mirrors from given filename
+// will open file from filename and close it
+void fileInit(/*in*/ const char *filename[],
+        /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
+
+// prints values to stdout
+void printValues(const Segment ray, const int count, const Segment mirrors[]);
 
 // rand between min (incl.) and max (excl.)
 int rand(int min, int max);
 
-// rand from 0 to max (excl.)
+// rand from 0 (incl.) to max (excl.)
 int rand(int max) { return rand(0, max); }
 
+// given and unmodified main method from specification Ex01
+// argc is used as an option, 1 is random, 2 is read of a file
+// argv is the filename
+// more arguments will result in an random run
 int main(int argc, const char *argv[]);
