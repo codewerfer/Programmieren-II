@@ -13,9 +13,7 @@
 int main(int argc, const char *argv[]) {
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 
-  Segment ray;
-  int n;
-  Segment *mirrors;
+  Segment ray; int n; Segment *mirrors;
   init(argc, argv, ray, n, mirrors);
   drawMirrors(n, mirrors);
   for (int i = 0; i < T; i++) {
@@ -57,16 +55,11 @@ void init(int option, const char *filename[],
 void printValues(const Segment ray, const int count, const Segment *mirrors) {
   // output of ray - watch out, second pair are the vector, therefore x1 - x0
   // and y1 - y0.
-  cout << ray.getStartPoint().getX() << " " << ray.getStartPoint().getY() <<
-       " " << ray.getEndPoint().getX() - ray.getStartPoint().getX() << " " <<
-       ray.getEndPoint().getY() - ray.getStartPoint().getY() << endl;
+  cout << (SegmentVec)ray << endl;
   cout << count << endl;
-  // print
+  // print mirrors
   for (int i = 0; i < count; ++i) {
-    cout << mirrors[i].getStartPoint().getX() << " " <<
-         mirrors[i].getStartPoint().getY() << " " <<
-         mirrors[i].getEndPoint().getX() << " " <<
-         mirrors[i].getEndPoint().getY() << endl;
+    cout << mirrors[i] << endl;
   }
 }
 
