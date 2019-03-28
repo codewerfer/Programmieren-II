@@ -11,6 +11,12 @@
 #include "Ex01.h"
 
 int main(int argc, const char *argv[]) {
+  Segment a("1 2 3 4");
+  SegmentVec b("1 2 3 4");
+
+  cout << a << " -> " << (SegmentVec)a << endl;
+  cout << b << " -> " << (Segment)b << endl;
+
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 
   Segment ray; int n; Segment *mirrors;

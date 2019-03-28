@@ -101,6 +101,10 @@ private:
 };
 
 class SegmentVec : public Segment {
+protected:
+  using Segment::startPoint;
+  using Segment::endPoint;
+
 public:
   // constructor that parses a string to SegmentVec
   SegmentVec(const std::string str) {
@@ -118,18 +122,18 @@ public:
   }
 
   SegmentVec(const Segment seg) {
-    startPoint = seg.getStartPoint();
-    endPoint = seg.getEndPoint();
+    Segment::startPoint = seg.getStartPoint();
+    Segment::endPoint = seg.getEndPoint();
   }
 
   friend std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray);
-
-protected:
-  using Segment::startPoint;
-  using Segment::endPoint;
 };
 
 std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
+  std::cout << "t1 " << ray.startPoint.getX() << std::endl;
+  std::cout << "t2 " << ((Segment)ray).getStartPoint().getX() << std::endl;
+
+
   stream << ray.startPoint.getX() << " " << ray.startPoint.getY() << " " <<
          ray.endPoint.getX() - ray.startPoint.getX() << " " <<
          ray.endPoint.getY() - ray.startPoint.getY();
