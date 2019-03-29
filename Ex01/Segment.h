@@ -25,14 +25,6 @@ public:
     Point(double x, double y) : x(x), y(y) {}
 
     Point(const Point &p) : x(p.x), y(p.y) {}
-
-    double getX() const;
-
-    double setX(double x);
-
-    double getY() const;
-
-    double setY(double y);
   };
 
   // default constructor
@@ -49,15 +41,17 @@ public:
   Segment(const std::string str) {
     std::stringstream stream(str);
 
-    int n[4];
-    int i = 0;
-    while (stream) {
-      stream >> n[i++];
-    }
-    startPoint.setX(n[0]);
-    startPoint.setY(n[1]);
-    endPoint.setX(n[2]);
-    endPoint.setY(n[3]);
+    //int n[4];
+    //int i = 0;
+//    while (stream) {
+//      stream >> n[i++];
+//    }
+    stream >> startPoint.x >> std::ws >> startPoint.y >> std::ws >>
+              endPoint.x >> std::ws >> endPoint.y;
+//    startPoint.setX(n[0]);
+//    startPoint.setY(n[1]);
+//    endPoint.setX(n[2]);
+//    endPoint.setY(n[3]);
   }
 
   // returns Euclidean length of vector
@@ -114,11 +108,10 @@ public:
     while (stream) {
       stream >> n[i++];
     }
-    startPoint.x;
-    startPoint.setX(n[0]);
-    startPoint.setY(n[1]);
-    endPoint.setX(n[2] + n[0]);
-    endPoint.setY(n[3] + n[1]);
+    startPoint.x = (n[0]);
+    startPoint.y = (n[1]);
+    endPoint.x = (n[2] + n[0]);
+    endPoint.y = (n[3] + n[1]);
   }
 
   SegmentVec(const Segment seg) {
@@ -130,35 +123,27 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
-  stream << ray.startPoint.getX() << " " << ray.startPoint.getY() << " " <<
-         ray.endPoint.getX() - ray.startPoint.getX() << " " <<
-         ray.endPoint.getY() - ray.startPoint.getY();
+  stream << ray.startPoint.x << " " << ray.startPoint.y << " " <<
+         ray.endPoint.x - ray.startPoint.x << " " <<
+         ray.endPoint.y - ray.startPoint.y;
   return stream;
 }
 
-double Segment::Point::getX() const { return x; }
-
-double Segment::Point::setX(double x) { return this->x = x; }
-
-double Segment::Point::getY() const { return y; }
-
-double Segment::Point::setY(double y) { return this->y = y; }
-
 double Segment::norm() const {
-  return sqrt(pow(endPoint.getX() - startPoint.getX(), 2) +
-              pow(endPoint.getY() - startPoint.getY(), 2));
+  return sqrt(pow(endPoint.x - startPoint.x, 2) +
+              pow(endPoint.y - startPoint.y, 2));
 }
 
 double Segment::distance(Segment::Point p) const {
   // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
   // dnorm = d/norm()
-  return ((p.getX() - startPoint.getX()) * (endPoint.getY() - startPoint.getY())
-       - (p.getY() - startPoint.getY()) * (endPoint.getX() - startPoint.getX()))
+  return ((p.x - startPoint.x) * (endPoint.y - startPoint.y)
+       - (p.y - startPoint.y) * (endPoint.x - startPoint.x))
        / norm();
 }
 
 double Segment::det(Segment::Point a, Segment::Point b) {
-  return a.getX() * b.getY() - a.getY() * b.getX();
+  return a.x * b.y - a.y * b.x;
 }
 
 double Segment::det() const {
@@ -178,7 +163,7 @@ double Segment::det(Segment segment) {
 }
 
 std::ostream &operator<<(std::ostream &stream, const Segment &seg) {
-  stream << seg.startPoint.getX() << " " << seg.startPoint.getY() << " " <<
-         seg.endPoint.getX() << " " << seg.endPoint.getY();
+  stream << seg.startPoint.x << " " << seg.startPoint.y << " " <<
+         seg.endPoint.x << " " << seg.endPoint.y;
   return stream;
 }
