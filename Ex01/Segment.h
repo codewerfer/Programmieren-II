@@ -16,7 +16,6 @@ class Segment {
 public:
   // Point structure
   struct Point {
-  private:
     double x;
     double y;
 
@@ -108,13 +107,14 @@ protected:
 public:
   // constructor that parses a string to SegmentVec
   SegmentVec(const std::string str) {
-    std::stringstream stream(str);
+    std::istringstream stream(str);
 
     int n[4];
     int i = 0;
     while (stream) {
       stream >> n[i++];
     }
+    startPoint.x;
     startPoint.setX(n[0]);
     startPoint.setY(n[1]);
     endPoint.setX(n[2] + n[0]);
@@ -130,10 +130,6 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
-  std::cout << "t1 " << ray.startPoint.getX() << std::endl;
-  std::cout << "t2 " << ((Segment)ray).getStartPoint().getX() << std::endl;
-
-
   stream << ray.startPoint.getX() << " " << ray.startPoint.getY() << " " <<
          ray.endPoint.getX() - ray.startPoint.getX() << " " <<
          ray.endPoint.getY() - ray.startPoint.getY();
@@ -156,9 +152,9 @@ double Segment::norm() const {
 double Segment::distance(Segment::Point p) const {
   // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
   // dnorm = d/norm()
-  return ((p.getX() - startPoint.getX()) * (endPoint.getY() - startPoint.getY()) -
-          (p.getY() - startPoint.getY()) * (endPoint.getX() - startPoint.getX()))
-         / norm();
+  return ((p.getX() - startPoint.getX()) * (endPoint.getY() - startPoint.getY())
+       - (p.getY() - startPoint.getY()) * (endPoint.getX() - startPoint.getX()))
+       / norm();
 }
 
 double Segment::det(Segment::Point a, Segment::Point b) {

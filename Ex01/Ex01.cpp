@@ -14,12 +14,18 @@ int main(int argc, const char *argv[]) {
   Segment a("1 2 3 4");
   SegmentVec b("1 2 3 4");
 
-  cout << a << " -> " << (SegmentVec)a << endl;
-  cout << b << " -> " << (Segment)b << endl;
+  cout << a << " -> " << (SegmentVec) a << endl;
+  cout << b << " -> " << (Segment) b << endl;
+
+  for (int j = 0; j < argc; ++j) {
+    cout << argv[j] << endl;
+  }
 
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 
-  Segment ray; int n; Segment *mirrors;
+  Segment ray;
+  int n;
+  Segment *mirrors;
   init(argc, argv, ray, n, mirrors);
   drawMirrors(n, mirrors);
   for (int i = 0; i < T; i++) {
@@ -48,20 +54,25 @@ void init(int option, const char *filename[],
       break;
     case FILE_INPUT:
       // load from filename.
-      fileInit(filename, ray, mirrorCount, mirrors);
+      fileInit(filename[1], ray, mirrorCount, mirrors);
       break;
     default:
-      cout << "Invalid argument count. Start with random values.";
-      randomInit(ray, mirrorCount, mirrors);
+      cout << "Invalid argument count." << endl <<
+              "Usage: Ex01 [filename]" << endl <<
+              "    filename: filename with inputdata" << endl << endl <<
+              "Example(s):" << endl <<
+              "Ex01" << endl <<
+              "Ex01 input.txt" << endl;
+      exit(1);
   }
   // output of values to stdout
   printValues(ray, mirrorCount, mirrors);
 }
 
 void printValues(const Segment ray, const int count, const Segment *mirrors) {
-  // output of ray - watch out, second pair are the vector, therefore x1 - x0
+  // output of ray - watch out, second pair is a vector, therefore x1 - x0
   // and y1 - y0.
-  cout << (SegmentVec)ray << endl;
+  cout << (SegmentVec) ray << endl;
   cout << count << endl;
   // print mirrors
   for (int i = 0; i < count; ++i) {
@@ -69,8 +80,33 @@ void printValues(const Segment ray, const int count, const Segment *mirrors) {
   }
 }
 
-void fileInit(const char *filename[], Segment &ray, int &mirrorCount, Segment *&mirrors) {
+void fileInit(const string filename,
+              Segment &ray, int &mirrorCount, Segment *&mirrors) {
+  ifstream stream(filename);
+  if (stream.is_open()) {
+    string line;
 
+    // read ray
+    getline(stream, line);
+    ray = SegmentVec(line);
+
+    // read mirrorCount
+    getline(stream, line);
+    istringstream(line) >> mirrorCount;
+
+    // read mirrors
+    mirrors = new Segment[mirrorCount];
+    for (int i = 0; i < mirrorCount; ++i) {
+      getline(stream, line);
+      mirrors[i] = Segment(line);
+    }
+
+    // close file and return
+    stream.close();
+  } else {
+    cout << "Unable to open file.";
+    exit(2);
+  }
 }
 
 void drawMirrors(int mirrorCount, Segment mirrors[]) {
@@ -86,12 +122,11 @@ void reflectRay(int mirrorCount, Segment mirrors[], Segment ray,
 
 }
 
-
 void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors) {
   // init rand
   srand(time(0));
 
-  // create ray
+  // create ray with length >= 1
   do {
     ray = Segment(rand(W), rand(H), rand(W), rand(H));
   } while (ray.norm() < 1);

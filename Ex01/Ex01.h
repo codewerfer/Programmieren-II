@@ -13,6 +13,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <fstream>
+
+#include <iostream>
+#include <fstream>
+#include <string>
 
 #ifdef _WIN32
 
@@ -65,7 +70,7 @@ void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 // inits ray, mirrorCount and mirrors from given filename
 // will open file from filename and close it
-void fileInit(/*in*/ const char *filename[],
+void fileInit(/*in*/ const string filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 // prints values to stdout
