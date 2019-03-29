@@ -20,7 +20,7 @@ public:
     double y;
 
   public:
-    Point() {}
+    Point() = default;
 
     Point(double x, double y) : x(x), y(y) {}
 
