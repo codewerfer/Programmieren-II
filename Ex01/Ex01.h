@@ -35,7 +35,7 @@
 // the delivered video, it is a absolute position. Therefore I implemented both.
 // One can change it with following definition. (Comment it out for same result
 // as the video does)
-//#define VEC_SPEC
+#define VEC_SPEC
 
 // width of window
 #define W 800
@@ -66,6 +66,9 @@
 // red dot radius
 #define R 5
 
+// tolerance
+#define TOLERANCE 1e-9
+
 using namespace std;
 using namespace compsys;
 
@@ -80,7 +83,7 @@ void drawMirrors(int mirrorCount, Segment mirrors[]);
 
 void drawRay(const Segment& ray);
 
-void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], const Segment& ray,
+void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], Segment &ray,
         /*out*/ Segment &rayflection);
 
 // inits a random ray, random mirrors and set mirrorCount to N+4

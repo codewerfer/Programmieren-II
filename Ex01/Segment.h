@@ -40,7 +40,7 @@ public:
       return Point(x * i, y * i);
     }
 
-    Point operator -() const {
+    Point operator-() const {
       return Point(-x, -y);
     }
 
@@ -49,7 +49,7 @@ public:
     }
 
     Point operator-(Point other) const {
-      return Point(x-other.x, y-other.y);
+      return Point(x - other.x, y - other.y);
     }
 
     friend std::ostream &operator<<(std::ostream &stream, const Point &p);
@@ -77,30 +77,39 @@ public:
   // returns Euclidean length of vector
   double norm() const;
 
-  // returns signed distance d of a point to this segment
-  // if (near) 0, we are on the line.
+  /**
+   * return signed normalized distance of a point to this segment
+   * @param p Point we want to measure
+   * @return normalized distance (real distance)
+   */
   double distance(Point p) const;
 
-  // returns intersect of this segment with other
-  bool intersect(Segment other) const;
+  /**
+   * return signed not normalized distance of a point to this segment
+   * @param p Point we want to measure
+   * @return not normalized distance (sign gives us information if point lies
+   * left or right of vector)
+   */
+  double distanceFast(Point p) const;
 
-  // returns intersect of this segment with other, and where it happens
-  bool intersect(Segment other, Point &where) const;
-
-  // get start point
-  Point getStartPoint() const;
-
-  // get end point
-  Point getEndPoint() const;
+  /**
+   * returns intersect of this segment as vector with other, how "far" away
+   * it is - in times of norm - and where this intersect point lies - it there
+   * is one
+   * @param[in] other other Segment, that this one wants to hit
+   * @param[out] t positiv if it lies in vec direction, negativ in others
+   * @param[out] where Point where the intersection is (startpoint + t*vec)
+   * @return true if there is a solution, false if not - t and where are not
+   * valid in this case.
+   */
+  bool intersectVec(Segment other, double &t, Point &where) const;
 
   // let Segment be interoperable with cout
   friend std::ostream &operator<<(std::ostream &stream, const Segment &seg);
 
-protected:
-  // absolute end point of segment
-
+  // absolute start point of segment
   Point startPoint;
-// absolute start point of segment
+  // absolute end point of segment
   Point endPoint;
 private:
   // determinate
@@ -123,6 +132,12 @@ protected:
   using Segment::endPoint;
 
 public:
+
+  SegmentVec(Point start, Point end) {
+    startPoint = start;
+    endPoint = startPoint + end;
+  }
+
   // constructor that parses a string to SegmentVec
   SegmentVec(const std::string str) {
     std::istringstream stream(str);
@@ -139,8 +154,8 @@ public:
   }
 
   SegmentVec(const Segment seg) {
-    Segment::startPoint = seg.getStartPoint();
-    Segment::endPoint = seg.getEndPoint();
+    Segment::startPoint = seg.startPoint;
+    Segment::endPoint = seg.endPoint;
   }
 
   friend std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray);
@@ -158,11 +173,14 @@ double Segment::norm() const {
 }
 
 double Segment::distance(Segment::Point p) const {
-  // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
   // dnorm = d/norm()
+  return distanceFast(p) / norm();
+}
+
+double Segment::distanceFast(Segment::Point p) const {
+  // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
   return ((p.x - startPoint.x) * (endPoint.y - startPoint.y)
-          - (p.y - startPoint.y) * (endPoint.x - startPoint.x))
-         / norm();
+          - (p.y - startPoint.y) * (endPoint.x - startPoint.x));
 }
 
 double Segment::det(Segment::Point a, Segment::Point b) {
@@ -171,14 +189,6 @@ double Segment::det(Segment::Point a, Segment::Point b) {
 
 double Segment::det() const {
   return det(startPoint, endPoint);
-}
-
-Segment::Point Segment::getStartPoint() const {
-  return startPoint;
-}
-
-Segment::Point Segment::getEndPoint() const {
-  return endPoint;
 }
 
 double Segment::det(Segment segment) {
@@ -192,4 +202,52 @@ std::ostream &operator<<(std::ostream &stream, const Segment &seg) {
 
 Segment::Point Segment::vec() const {
   return Segment::Point(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+}
+
+bool Segment::intersectVec(Segment other, double &t,
+                           Segment::Point &where) const {
+  // 1. Determinefortherayandforeachmirrorthecoeﬃcients a,b,c oftheequation
+  // ax + bx + cy = 0 that describes the line on which the ray respectively the
+  // mirror lies. From this determinetheintersectionpointofbothlines.
+  // ------ I don't get it. What x, x and y is meant? Therefore I will implement
+  // a well working algorithm that gets the solution in a good time - knowing
+  // a non hit relative fast.
+
+  // check if points of other lies left and right of this segment
+  double p0 = distanceFast(other.startPoint);
+  double p1 = distanceFast(other.endPoint);
+  if (signbit(p0) == signbit(p1) && p0 != 0 && p1 != 0) {
+    // we definitely do not hit a Segment if startpoint and endpoint of it lies
+    // both on the same side of our vector. Special case is if we hit one of
+    // this points. Do the fact, that even a little miss like the defined
+    // "| d1 - d2 | < a" will go outside, we can ignore the tolerance - we hit
+    // or we miss, otherwise we could say "we hit" if we miss at tolerance "a"
+    // or "we miss" if we hit at tolerance "a". Also we can ignore the division
+    // by the normal.
+    return false;
+  }
+
+  // Lets find the intersection Point with Cramer's rule:
+  // x = (c1*b2-b1*c2)/(a1*b2-b1*a2)
+  // y = (a1*c2-c1*a2)/(a1*b2-b1*a2)
+
+  // find a1x+b1y=c1
+  double a1 = endPoint.y - startPoint.y;
+  double b1 = startPoint.x - endPoint.x;
+  double c1 = a1 * (startPoint.x) + b1 * (startPoint.y);
+  // and  a2x+b2y=c2
+  double a2 = other.endPoint.y - other.startPoint.y;
+  double b2 = other.startPoint.x - other.endPoint.x;
+  double c2 = a2 * (other.startPoint.x) + b2 * (other.startPoint.y);
+
+  double det = a1 * b2 - b1 * a2; // we should already know this is != 0
+  if (det == 0) {
+    std::cerr << "det is 0, that should not happen" << std::endl;
+    return false;
+  }
+  where = Point((c1 * b2 - b1 * c2) / det, (a1 * c2 - c1 * a2) / det);
+
+  t = Segment(startPoint, where).norm() / norm();
+
+  return true;
 }

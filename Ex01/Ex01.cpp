@@ -112,8 +112,8 @@ void drawMirrors(int mirrorCount, Segment mirrors[]) {
 
   // draw mirrors
   for (int i = 0; i < mirrorCount; ++i) {
-    drawLine(mirrors[i].getStartPoint().x, mirrors[i].getStartPoint().y,
-             mirrors[i].getEndPoint().x, mirrors[i].getEndPoint().y, BLUE);
+    drawLine(mirrors[i].startPoint.x, mirrors[i].startPoint.y,
+             mirrors[i].endPoint.x, mirrors[i].endPoint.y, BLUE);
   }
 }
 
@@ -130,7 +130,7 @@ void drawRay(const Segment& ray) {
   vec /= r; // per pixel vector
 
   int steps = r / D;
-  Segment::Point start = ray.getStartPoint();
+  Segment::Point start = ray.startPoint;
   Segment::Point end;
 
   for (int i = 0; i < steps; ++i) {
@@ -144,15 +144,40 @@ void drawRay(const Segment& ray) {
 
   if (r % D != 0) // final step if missing
     drawLine(lround(start.x), lround(start.y),
-             ray.getEndPoint().x, ray.getEndPoint().y, BLUE);
+             ray.endPoint.x, ray.endPoint.y, BLUE);
 
   // draw red dot
-  fillEllipse(ray.getEndPoint().x, ray.getEndPoint().y, R, R, RED);
+  fillEllipse(ray.endPoint.x - R / 2, ray.endPoint.y - R / 2, R, R, RED);
 }
 
-void reflectRay(const int mirrorCount, const Segment mirrors[], const Segment& ray,
-                Segment &rayflection) {
+void reflectRay(const int mirrorCount, const Segment mirrors[],
+                Segment &ray, Segment &rayflection) {
+  // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
+  int i;
+  double t;
+  Segment::Point where;
+  bool found = false;
+  for (i = 0; i < 4; ++i) {
+    if (ray.intersectVec(mirrors[i], t, where) && t > (0 + TOLERANCE)) {
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    cout << "No wall found. Abort.";
+    exit(3);
+  }
 
+  cout << i << endl;
+
+  ray.endPoint = where;
+
+  // reflect on wall, easy version
+  if (mirrors[i].vec().x == 0) {
+    rayflection = SegmentVec(where, Segment::Point(ray.vec().x, -ray.vec().y));
+  } else {
+    rayflection = SegmentVec(where, Segment::Point(-ray.vec().x, ray.vec().y));
+  }
 }
 
 void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors) {
