@@ -13,11 +13,13 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-#include <fstream>
 
-#include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
+
+#include <chrono>
+#include <thread>
 
 #ifdef _WIN32
 
@@ -27,6 +29,13 @@
 
 #include "Drawing.h"
 #include "Segment.h"
+
+// The specification is not 100% clear how the ray is handled in the input.txt
+// file. After asking Prof. Schreiner, he said the 2nd pair is a vector. But in
+// the delivered video, it is a absolute position. Therefore I implemented both.
+// One can change it with following definition. (Comment it out for same result
+// as the video does)
+//#define VEC_SPEC
 
 // width of window
 #define W 800
@@ -46,6 +55,17 @@
 #define P2 W-1, H-1
 #define P3 0,   H-1
 
+// Colors
+#define WHITE 0xFFFFFF
+#define BLUE 0x0000FF
+#define RED 0xFF0000
+
+// drawRay definitions
+// drawn pixels per draw
+#define D 1
+// red dot radius
+#define R 5
+
 using namespace std;
 using namespace compsys;
 
@@ -58,9 +78,9 @@ void init(/*in*/ int option, const char **filename,
 
 void drawMirrors(int mirrorCount, Segment mirrors[]);
 
-void drawRay(Segment ray);
+void drawRay(const Segment& ray);
 
-void reflectRay(/*in*/ int mirrorCount, Segment mirrors[], Segment ray,
+void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], const Segment& ray,
         /*out*/ Segment &rayflection);
 
 // inits a random ray, random mirrors and set mirrorCount to N+4
@@ -70,11 +90,11 @@ void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 // inits ray, mirrorCount and mirrors from given filename
 // will open file from filename and close it
-void fileInit(/*in*/ const string filename,
+void fileInit(/*in*/ const string& filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 // prints values to stdout
-void printValues(const Segment ray, const int count, const Segment mirrors[]);
+void printValues(const Segment& ray, const int count, const Segment mirrors[]);
 
 // rand between min (incl.) and max (excl.)
 int rand(int min, int max);

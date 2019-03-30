@@ -11,16 +11,6 @@
 #include "Ex01.h"
 
 int main(int argc, const char *argv[]) {
-  Segment a("1 2 3 4");
-  SegmentVec b("1 2 3 4");
-
-  cout << a << " -> " << (SegmentVec) a << endl;
-  cout << b << " -> " << (Segment) b << endl;
-
-  for (int j = 0; j < argc; ++j) {
-    cout << argv[j] << endl;
-  }
-
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 
   Segment ray;
@@ -58,21 +48,25 @@ void init(int option, const char *filename[],
       break;
     default:
       cout << "Invalid argument count." << endl <<
-              "Usage: Ex01 [filename]" << endl <<
-              "    filename: filename with inputdata" << endl << endl <<
-              "Example(s):" << endl <<
-              "Ex01" << endl <<
-              "Ex01 input.txt" << endl;
+           "Usage: Ex01 [filename]" << endl <<
+           "    filename: filename with inputdata" << endl << endl <<
+           "Example(s):" << endl <<
+           "Ex01" << endl <<
+           "Ex01 input.txt" << endl;
       exit(1);
   }
   // output of values to stdout
   printValues(ray, mirrorCount, mirrors);
 }
 
-void printValues(const Segment ray, const int count, const Segment *mirrors) {
-  // output of ray - watch out, second pair is a vector, therefore x1 - x0
-  // and y1 - y0.
+void printValues(const Segment& ray, const int count, const Segment *mirrors) {
+  // output of ray - watch out, second pair is a vector if VEC_SPEC is set
+  // therefore x1 - x0 and y1 - y0.
+#ifdef VEC_SPEC
   cout << (SegmentVec) ray << endl;
+#else
+  cout << ray << endl;
+#endif
   cout << count << endl;
   // print mirrors
   for (int i = 0; i < count; ++i) {
@@ -80,7 +74,7 @@ void printValues(const Segment ray, const int count, const Segment *mirrors) {
   }
 }
 
-void fileInit(const string filename,
+void fileInit(const string& filename,
               Segment &ray, int &mirrorCount, Segment *&mirrors) {
   ifstream stream(filename);
   if (stream.is_open()) {
@@ -88,8 +82,11 @@ void fileInit(const string filename,
 
     // read ray
     getline(stream, line);
+#ifdef VEC_SPEC
     ray = SegmentVec(line);
-
+#else
+    ray = Segment(line);
+#endif
     // read mirrorCount
     getline(stream, line);
     istringstream(line) >> mirrorCount;
@@ -110,14 +107,52 @@ void fileInit(const string filename,
 }
 
 void drawMirrors(int mirrorCount, Segment mirrors[]) {
+  // fill with white rectangle
+  fillRectangle(0, 0, W - 1, H - 1, WHITE);
 
+  // draw mirrors
+  for (int i = 0; i < mirrorCount; ++i) {
+    drawLine(mirrors[i].getStartPoint().x, mirrors[i].getStartPoint().y,
+             mirrors[i].getEndPoint().x, mirrors[i].getEndPoint().y, BLUE);
+  }
 }
 
-void drawRay(Segment ray) {
+void drawRay(const Segment& ray) {
+  // from the midpoint algorithm (Pittway 1967, van Aken and Novak 1985) we know
+  // that a line from (x0, y0) to (x1, y1) has max(|x1-x0|,|y1-y0|) pixels on a
+  // raster image. Because the specification of this Exercise says we should
+  // draw (exactly) D pixels, we use this length and not the real euclidean
+  // length. Every subpart of a midpoint algorithm line is also again a midpoint
+  // algorithm line, down to single dot size.
 
+  Segment::Point vec = ray.vec();
+  cout << vec << endl;
+  const int r = max(abs((int)vec.x), abs((int)vec.y));
+
+  vec /= r; // per pixel vector
+
+  int steps = r / D;
+  Segment::Point start = ray.getStartPoint();
+  Segment::Point end;
+
+  for (int i = 0; i < steps; ++i) {
+    end = start + vec * (D - 1);
+    drawLine(lround(start.x), lround(start.y),
+             lround(end.x), lround(end.y), RED);
+    start = end + vec;
+    // it's running very fast on my computer, therefore, I have to slow it down
+    //this_thread::sleep_for(chrono::milliseconds(5));
+  }
+
+  if (r % D != 0) // final step if missing
+    drawLine(lround(start.x), lround(start.y),
+             ray.getEndPoint().x, ray.getEndPoint().y, BLUE);
+
+  // draw red dot
+  fillEllipse(ray.getEndPoint().x, ray.getEndPoint().y, R, R, RED);
 }
 
-void reflectRay(int mirrorCount, Segment mirrors[], Segment ray,
+void reflectRay(const int mirrorCount, const Segment mirrors[], const Segment& ray,
                 Segment &rayflection) {
 
 }
