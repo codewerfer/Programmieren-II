@@ -121,14 +121,12 @@ void drawRay(const Segment& ray) {
   // from the midpoint algorithm (Pittway 1967, van Aken and Novak 1985) we know
   // that a line from (x0, y0) to (x1, y1) has max(|x1-x0|,|y1-y0|) pixels on a
   // raster image. Because the specification of this Exercise says we should
-  // draw (exactly) D pixels, we use this length and not the real euclidean
+  // draw (exactly) D pixels, we use this length (r) and not the real euclidean
   // length. Every subpart of a midpoint algorithm line is also again a midpoint
   // algorithm line, down to single dot size.
 
   Segment::Point vec = ray.vec();
-  cout << vec << endl;
   const int r = max(abs((int)vec.x), abs((int)vec.y));
-
   vec /= r; // per pixel vector
 
   int steps = r / D;
