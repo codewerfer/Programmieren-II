@@ -105,7 +105,7 @@ public:
    * @return true if there is a solution, false if not - t and where are not
    * valid in this case.
    */
-  bool intersectVec(const Segment other, double &t, Point &where) const;
+  bool intersectVec(const Segment other, Point &where) const;
 
   // let Segment be interoperable with cout
   friend std::ostream &operator<<(std::ostream &stream, const Segment &seg);
@@ -211,8 +211,7 @@ inline double Det(double a, double b, double c, double d) {
   return a * d - b * c;
 }
 
-bool Segment::intersectVec(const Segment other, double &t,
-                           Segment::Point &where) const {
+bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
   // from specification:
   // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
   // equation ax + bx + cy = 0 that describes the line on which the ray
@@ -236,10 +235,11 @@ bool Segment::intersectVec(const Segment other, double &t,
     return false;
   }
 
+  /*
   // Lets find the intersection Point with Cramer's rule:
   // x = (c1*b2-b1*c2)/(a1*b2-b1*a2)
   // y = (a1*c2-c1*a2)/(a1*b2-b1*a2)
-/*
+
   // find a1x+b1y=c1
   double a1 = endPoint.y - startPoint.y;
   double b1 = startPoint.x - endPoint.x;
@@ -250,25 +250,36 @@ bool Segment::intersectVec(const Segment other, double &t,
   double c2 = a2 * (other.startPoint.x) + b2 * (other.startPoint.y);
 
   double det = a1 * b2 - b1 * a2; // we should already know this is != 0
-  if (det == 0) { // 0 if parallel
-    std::cerr << "det is 0, that should not happen" << std::endl;
+  if (det <= 0) { // 0 if parallel, negativ vec goes in wrong direction
     return false;
   }
   where = Point((c1 * b2 - b1 * c2) / det, (a1 * c2 - c1 * a2) / det);
 */
 
-/*  const double det = (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
+  const double det = (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
           (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
 
-  double pre = (startPoint.x*endPoint.y - startPoint.y*endPoint.x);
-  double post = (other.startPoint.x*other.endPoint.y - other.startPoint.y*other.endPoint.x);
+  //std::cout << "det " << det << std::endl;
+  //std::cout << "p0 " << p0 << std::endl;
+  //std::cout << "p1 " << p1 << std::endl;
+  //std::cout << "p0*p1" << p0*p1 << std::endl;
+
+  if (signbit(p0) == signbit(det)) { std::cout << "+" << std::endl; }
+  else { std::cout << "--" << std::endl; }
+
+  if (det <= 0) {
+    return false;
+  }
+
+  double pre = this->det(); //(startPoint.x*endPoint.y - startPoint.y*endPoint.x);
+  double post = other.det(); // (other.startPoint.x*other.endPoint.y - other.startPoint.y*other.endPoint.x);
 
   double x = (pre * (other.startPoint.x-other.endPoint.x)-(startPoint.x-endPoint.x) * post) / det;
   double y = (pre * (other.startPoint.y-other.endPoint.y)-(startPoint.y-endPoint.y) * post) / det;
 
   where = Point(x,y);
-*/
 
+/*
   double detL1 = Det(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
   double detL2 = Det(other.startPoint.x, other.startPoint.y, other.endPoint.x, other.endPoint.y);
   double x1mx2 = startPoint.x - endPoint.x;
@@ -287,8 +298,6 @@ bool Segment::intersectVec(const Segment other, double &t,
   double iyOut = ynom / denom;
 
   where = Point(ixOut, iyOut);
-
-  t = Segment(startPoint, where).norm() / norm();
-
+*/
   return true;
 }
