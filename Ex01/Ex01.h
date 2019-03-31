@@ -35,7 +35,7 @@
 // the delivered video, it is a absolute position. Therefore I implemented both.
 // One can change it with following definition. (Comment it out for same result
 // as the video does)
-#define VEC_SPEC
+//#define VEC_SPEC
 
 // width of window
 #define W 800
@@ -59,10 +59,11 @@
 #define WHITE 0xFFFFFF
 #define BLUE 0x0000FF
 #define RED 0xFF0000
+#define GREEN 0x00FF00
 
 // drawRay definitions
 // drawn pixels per draw
-#define D 1
+#define D 4
 // red dot radius
 #define R 6
 
@@ -109,7 +110,7 @@ void drawMirrors(const int mirrorCount, const Segment mirrors[]);
  * midpoint algorithm - to get nice results.
  * @param ray Light ray that will be animated from startPoint to endPoint.
  */
-void drawRay(const Segment& ray);
+void drawRay(const Segment &ray, unsigned int color = RED);
 
 /**
  * Mirror and wall version. Ray will be reflected from all in mirrors.
