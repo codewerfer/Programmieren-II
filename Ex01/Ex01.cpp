@@ -11,8 +11,11 @@
 #include "Ex01.h"
 
 int main(int argc, const char *argv[]) {
+#ifdef _DEBUG
+  beginDrawing(W + 150, H + 50, "Laser", 0xFFFFFF);
+#else
   beginDrawing(W, H, "Laser", 0xFFFFFF);
-
+#endif
   Segment ray;
   int n;
   Segment *mirrors;
@@ -20,7 +23,7 @@ int main(int argc, const char *argv[]) {
   drawMirrors(n, mirrors);
   for (int i = 0; i < T; i++) {
     Segment ray0;
-    reflectRayOld(n, mirrors, ray, ray0);
+    reflectRay(n, mirrors, ray, ray0);
     drawRay(ray);
     ray = ray0;
   }
@@ -154,37 +157,63 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
                 Segment &ray, Segment &rayflection) {
   // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
   static int lastMirror = -1;
-  double t;
   Segment::Point poi;
   bool found = false;
-
   int nearstIndex;
   double nearestNorm = HUGE_VAL;
+  Segment::Point *points = new Segment::Point[mirrorCount];
 #ifdef _DEBUG
   drawRay(ray, GREEN);
 #endif
   for (int i = 0; i < mirrorCount; ++i) {
+#ifdef _DEBUG
+    {
+      //draw "normal"to ray
+      drawRay(SegmentVec(ray.startPoint,
+                         Segment::Point(-ray.vec().y, ray.vec().x)), YELLOW);
+      stringstream s1, s2;
+      // print distance of mirrors[i] start and endpoint to ray
+      s1 << ray.distance(mirrors[i].startPoint) << " (" << mirrors[i].startPoint << ")";
+      s2 << ray.distance(mirrors[i].endPoint) << " (" << mirrors[i].endPoint << ")";
+      drawText(mirrors[i].startPoint.x + R,
+               mirrors[i].startPoint.y,
+               s1.str().c_str());
+      drawText(mirrors[i].endPoint.x + R,
+               mirrors[i].endPoint.y,
+               s2.str().c_str());
+    }
+#endif
     if (i == lastMirror) {
-      // we need not to check again last hitted mirror - and this is the only
+      // we need not to check again last hit mirror - this is the only
       // point here where we have a tolerance problem for the next compare
       continue;
     }
     if (ray.intersectVec(mirrors[i], poi)) {
+#ifdef _DEBUG
+      {
+        stringstream s3;
+        // draw possible hits on rays way
+        drawRectangle(poi.x - R / 2, poi.y - R / 2, R, R, BLACK);
+
+        s3 << ray.orthoDist(poi) << " (" << poi << ")";
+        drawText(poi.x + R, poi.y, s3.str().c_str());
+      }
+#endif
       found = true;
-      double d;
-      if ((d = Segment(ray.startPoint, poi).norm()) < nearestNorm) {
+      double d = ray.orthoDistFast(poi);
+      if (d > 0 && d < nearestNorm) {
         nearestNorm = d;
         nearstIndex = i;
-        cout << "nearest mirror: " << i << endl;
+        points[i] = poi;
       }
-    } else { cout << "not mirror: " << i << endl; }
+    }
   }
   if (!found) {
     cout << "No wall found. Abort.";
     exit(3);
   }
 
-  ray.endPoint = poi;
+  ray.endPoint = points[nearstIndex];
   lastMirror = nearstIndex;
 
   // reflect on wall, easy version, just flip sign of x/y - depends what we hit
@@ -193,6 +222,7 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
   } else {
     rayflection = SegmentVec(poi, Segment::Point(ray.vec().x, -ray.vec().y));
   }
+  delete[] points;
 }
 
 void reflectRayOld(const int mirrorCount, const Segment mirrors[],
@@ -200,7 +230,6 @@ void reflectRayOld(const int mirrorCount, const Segment mirrors[],
   // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
   static int lastMirror = -1;
   int i;
-  double t;
   Segment::Point poi;
   bool found = false;
 #ifdef _DEBUG

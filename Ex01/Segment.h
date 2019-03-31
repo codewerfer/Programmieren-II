@@ -95,6 +95,10 @@ public:
    */
   double distanceFast(Point p) const;
 
+  double orthoDist(Point p) const;
+
+  double orthoDistFast(Point p) const;
+
   /**
    * returns intersect of this segment as vector with other, how "far" away
    * it is - in times of norm - and where this intersect point lies - it there
@@ -125,6 +129,8 @@ private:
 
   // determinate of segment
   static double det(Segment segment);
+
+  Segment normalVec() const;
 };
 
 std::ostream &operator<<(std::ostream &stream, const Segment::Point &p) {
@@ -237,70 +243,27 @@ bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
     return false;
   }
 
-  /*
-  // Lets find the intersection Point with Cramer's rule:
-  // x = (c1*b2-b1*c2)/(a1*b2-b1*a2)
-  // y = (a1*c2-c1*a2)/(a1*b2-b1*a2)
-
-  // find a1x+b1y=c1
-  double a1 = endPoint.y - startPoint.y;
-  double b1 = startPoint.x - endPoint.x;
-  double c1 = a1 * (startPoint.x) + b1 * (startPoint.y);
-  // and  a2x+b2y=c2
-  double a2 = other.endPoint.y - other.startPoint.y;
-  double b2 = other.startPoint.x - other.endPoint.x;
-  double c2 = a2 * (other.startPoint.x) + b2 * (other.startPoint.y);
-
-  double det = a1 * b2 - b1 * a2; // we should already know this is != 0
-  if (det <= 0) { // 0 if parallel, negativ vec goes in wrong direction
-    return false;
-  }
-  where = Point((c1 * b2 - b1 * c2) / det, (a1 * c2 - c1 * a2) / det);
-*/
-
-  const double det = (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
+  const double det =
+          (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
           (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
-
-  //std::cout << "det " << det << std::endl;
-  //std::cout << "p0 " << p0 << std::endl;
-  //std::cout << "p1 " << p1 << std::endl;
-  //std::cout << "p0*p1" << p0*p1 << std::endl;
 
   if (signbit(p0) == signbit(det)) { std::cout << "+" << std::endl; }
   else { std::cout << "--" << std::endl; }
 
-  if (det <= 0) {
+  if (det == 0) {
     return false;
   }
 
-  double pre = this->det(); //(startPoint.x*endPoint.y - startPoint.y*endPoint.x);
-  double post = other.det(); // (other.startPoint.x*other.endPoint.y - other.startPoint.y*other.endPoint.x);
+  double pre = this->det();
+  double post = other.det();
 
-  double x = (pre * (other.startPoint.x-other.endPoint.x)-(startPoint.x-endPoint.x) * post) / det;
-  double y = (pre * (other.startPoint.y-other.endPoint.y)-(startPoint.y-endPoint.y) * post) / det;
+  double x = (pre * (other.startPoint.x - other.endPoint.x) -
+              (startPoint.x - endPoint.x) * post) / det;
+  double y = (pre * (other.startPoint.y - other.endPoint.y) -
+              (startPoint.y - endPoint.y) * post) / det;
 
   where = Point(x,y);
 
-/*
-  double detL1 = Det(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-  double detL2 = Det(other.startPoint.x, other.startPoint.y, other.endPoint.x, other.endPoint.y);
-  double x1mx2 = startPoint.x - endPoint.x;
-  double x3mx4 = other.startPoint.x - other.endPoint.x;
-  double y1my2 = startPoint.y - endPoint.y;
-  double y3my4 = other.startPoint.y - other.endPoint.y;
-
-  double xnom = Det(detL1, x1mx2, detL2, x3mx4);
-  double ynom = Det(detL1, y1my2, detL2, y3my4);
-  double denom = Det(x1mx2, y1my2, x3mx4, y3my4);
-  if (denom == 0.0)//Lines don't seem to cross
-  {
-    return false;
-  }
-  double ixOut = xnom / denom;
-  double iyOut = ynom / denom;
-
-  where = Point(ixOut, iyOut);
-*/
   return true;
 }
 
@@ -328,69 +291,33 @@ bool Segment::intersectVecOld(const Segment other, Segment::Point &where) const 
     return false;
   }
 
-  /*
-  // Lets find the intersection Point with Cramer's rule:
-  // x = (c1*b2-b1*c2)/(a1*b2-b1*a2)
-  // y = (a1*c2-c1*a2)/(a1*b2-b1*a2)
-
-  // find a1x+b1y=c1
-  double a1 = endPoint.y - startPoint.y;
-  double b1 = startPoint.x - endPoint.x;
-  double c1 = a1 * (startPoint.x) + b1 * (startPoint.y);
-  // and  a2x+b2y=c2
-  double a2 = other.endPoint.y - other.startPoint.y;
-  double b2 = other.startPoint.x - other.endPoint.x;
-  double c2 = a2 * (other.startPoint.x) + b2 * (other.startPoint.y);
-
-  double det = a1 * b2 - b1 * a2; // we should already know this is != 0
-  if (det <= 0) { // 0 if parallel, negativ vec goes in wrong direction
-    return false;
-  }
-  where = Point((c1 * b2 - b1 * c2) / det, (a1 * c2 - c1 * a2) / det);
-*/
-
-  const double det = (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
-                     (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
-
-  //std::cout << "det " << det << std::endl;
-  //std::cout << "p0 " << p0 << std::endl;
-  //std::cout << "p1 " << p1 << std::endl;
-  //std::cout << "p0*p1" << p0*p1 << std::endl;
-
-  if (signbit(p0) == signbit(det)) { std::cout << "+" << std::endl; }
-  else { std::cout << "--" << std::endl; }
+  const double det =
+          (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
+          (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
 
   if (det <= 0) {
     return false;
   }
 
-  double pre = this->det(); //(startPoint.x*endPoint.y - startPoint.y*endPoint.x);
-  double post = other.det(); // (other.startPoint.x*other.endPoint.y - other.startPoint.y*other.endPoint.x);
+  double pre = this->det();
+  double post = other.det();
 
   double x = (pre * (other.startPoint.x - other.endPoint.x) - (startPoint.x - endPoint.x) * post) / det;
   double y = (pre * (other.startPoint.y - other.endPoint.y) - (startPoint.y - endPoint.y) * post) / det;
 
   where = Point(x, y);
 
-/*
-  double detL1 = Det(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-  double detL2 = Det(other.startPoint.x, other.startPoint.y, other.endPoint.x, other.endPoint.y);
-  double x1mx2 = startPoint.x - endPoint.x;
-  double x3mx4 = other.startPoint.x - other.endPoint.x;
-  double y1my2 = startPoint.y - endPoint.y;
-  double y3my4 = other.startPoint.y - other.endPoint.y;
-
-  double xnom = Det(detL1, x1mx2, detL2, x3mx4);
-  double ynom = Det(detL1, y1my2, detL2, y3my4);
-  double denom = Det(x1mx2, y1my2, x3mx4, y3my4);
-  if (denom == 0.0)//Lines don't seem to cross
-  {
-    return false;
-  }
-  double ixOut = xnom / denom;
-  double iyOut = ynom / denom;
-
-  where = Point(ixOut, iyOut);
-*/
   return true;
+}
+
+double Segment::orthoDistFast(Segment::Point p) const {
+  return normalVec().distanceFast(p);
+}
+
+Segment Segment::normalVec() const {
+  return SegmentVec(startPoint, Point(-vec().y, vec().x));
+}
+
+double Segment::orthoDist(Segment::Point p) const {
+  return normalVec().distance(p);
 }

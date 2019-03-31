@@ -56,10 +56,14 @@
 #define P3 0,   H-1
 
 // Colors
+#define BLACK 0x000000
 #define WHITE 0xFFFFFF
 #define BLUE 0x0000FF
 #define RED 0xFF0000
 #define GREEN 0x00FF00
+#define CYAN 0x00FFFF
+#define MAGENTA 0xFF00FF
+#define YELLOW 0xFFFF00
 
 // drawRay definitions
 // drawn pixels per draw
