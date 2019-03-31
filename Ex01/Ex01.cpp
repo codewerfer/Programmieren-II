@@ -3,7 +3,7 @@
 // class File for file manipulation and associated operations.
 //
 // Author: Jürgen Vogl <codewerfer>
-// Last Modification: 23.03.2019
+// Last Modification: 31.03.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
@@ -30,7 +30,7 @@ int main(int argc, const char *argv[]) {
   endDrawing();
 }
 
-void init(int option, const char *filename[],
+void init(const int option, const char *filename[],
           Segment &ray, int &mirrorCount, Segment *&mirrors) {
   switch (options(option)) {
     case RANDOM_INPUT:
@@ -59,7 +59,7 @@ void init(int option, const char *filename[],
   printValues(ray, mirrorCount, mirrors);
 }
 
-void printValues(const Segment& ray, const int count, const Segment *mirrors) {
+void printValues(const Segment &ray, const int count, const Segment *mirrors) {
   // output of ray - watch out, second pair is a vector if VEC_SPEC is set
   // therefore x1 - x0 and y1 - y0.
 #ifdef VEC_SPEC
@@ -74,7 +74,7 @@ void printValues(const Segment& ray, const int count, const Segment *mirrors) {
   }
 }
 
-void fileInit(const string& filename,
+void fileInit(const string &filename,
               Segment &ray, int &mirrorCount, Segment *&mirrors) {
   ifstream stream(filename);
   if (stream.is_open()) {
@@ -106,7 +106,7 @@ void fileInit(const string& filename,
   }
 }
 
-void drawMirrors(int mirrorCount, Segment mirrors[]) {
+void drawMirrors(const int mirrorCount, const Segment mirrors[]) {
   // fill with white rectangle
   fillRectangle(0, 0, W - 1, H - 1, WHITE);
 
@@ -117,7 +117,7 @@ void drawMirrors(int mirrorCount, Segment mirrors[]) {
   }
 }
 
-void drawRay(const Segment& ray) {
+void drawRay(const Segment &ray) {
   // from the midpoint algorithm (Pittway 1967, van Aken and Novak 1985) we know
   // that a line from (x0, y0) to (x1, y1) has max(|x1-x0|,|y1-y0|) pixels on a
   // raster image. Because the specification of this Exercise says we should
@@ -126,7 +126,7 @@ void drawRay(const Segment& ray) {
   // algorithm line, down to single dot size.
 
   Segment::Point vec = ray.vec();
-  const int r = max(abs((int)vec.x), abs((int)vec.y));
+  const int r = max(abs((int) vec.x), abs((int) vec.y));
   vec /= r; // per pixel vector
 
   int steps = r / D;
@@ -144,7 +144,7 @@ void drawRay(const Segment& ray) {
 
   if (r % D != 0) // final step if missing
     drawLine(lround(start.x), lround(start.y),
-             ray.endPoint.x, ray.endPoint.y, BLUE);
+             ray.endPoint.x, ray.endPoint.y, RED);
 
   // draw red dot
   fillEllipse(ray.endPoint.x - R / 2, ray.endPoint.y - R / 2, R, R, RED);
@@ -153,12 +153,19 @@ void drawRay(const Segment& ray) {
 void reflectRay(const int mirrorCount, const Segment mirrors[],
                 Segment &ray, Segment &rayflection) {
   // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
+  static int lastMirror = -1;
   int i;
   double t;
-  Segment::Point where;
+  Segment::Point poi;
   bool found = false;
+  cout << "RayNorm1: " << ray.vec() / ray.norm() << endl;
   for (i = 0; i < 4; ++i) {
-    if (ray.intersectVec(mirrors[i], t, where) && t > (0 + TOLERANCE)) {
+    if (i == lastMirror) {
+      // we need not to check again last hitted mirror - and this is the only
+      // point here where we have a tolerance problem for the next compare
+      continue;
+    }
+    if (ray.intersectVec(mirrors[i], t, poi) && t >= (0/*+ TOLERANCE*/)) {
       found = true;
       break;
     }
@@ -168,15 +175,50 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
     exit(3);
   }
 
-  cout << i << endl;
-
-  ray.endPoint = where;
+  ray.endPoint = poi;
+  cout << "RayNorm2: " << ray.vec() / ray.norm() << endl;
+  lastMirror = i;
 
   // reflect on wall, easy version
   if (mirrors[i].vec().x == 0) {
-    rayflection = SegmentVec(where, Segment::Point(ray.vec().x, -ray.vec().y));
+    rayflection = SegmentVec(poi, Segment::Point(ray.vec().x, -ray.vec().y));
   } else {
-    rayflection = SegmentVec(where, Segment::Point(-ray.vec().x, ray.vec().y));
+    rayflection = SegmentVec(poi, Segment::Point(-ray.vec().x, ray.vec().y));
+  }
+}
+
+void reflectRayOld(const int mirrorCount, const Segment mirrors[],
+                   Segment &ray, Segment &rayflection) {
+  // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
+  static int lastMirror = -1;
+  int i;
+  double t;
+  Segment::Point poi;
+  bool found = false;
+  for (i = 0; i < WALLCOUNT; ++i) {
+    if (i == lastMirror) {
+      // we need not to check again last hitted mirror - and this is the only
+      // point here where we have a tolerance problem
+      continue;
+    }
+    if (ray.intersectVec(mirrors[i], t, poi) && t > (0/*+ TOLERANCE*/)) {
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    cout << "No wall found. Abort.";
+    exit(3);
+  }
+
+  ray.endPoint = poi;
+  lastMirror = i;
+
+  // reflect on wall, easy version
+  if (mirrors[i].vec().x == 0) {
+    rayflection = SegmentVec(poi, Segment::Point(ray.vec().x, -ray.vec().y));
+  } else {
+    rayflection = SegmentVec(poi, Segment::Point(-ray.vec().x, ray.vec().y));
   }
 }
 

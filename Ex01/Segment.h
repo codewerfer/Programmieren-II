@@ -10,6 +10,9 @@
 
 #pragma once
 
+// tolerance
+#define TOLERANCE 1e-12
+
 #include <sstream>
 
 class Segment {
@@ -102,7 +105,7 @@ public:
    * @return true if there is a solution, false if not - t and where are not
    * valid in this case.
    */
-  bool intersectVec(Segment other, double &t, Point &where) const;
+  bool intersectVec(const Segment other, double &t, Point &where) const;
 
   // let Segment be interoperable with cout
   friend std::ostream &operator<<(std::ostream &stream, const Segment &seg);
@@ -204,20 +207,26 @@ Segment::Point Segment::vec() const {
   return Segment::Point(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
 }
 
-bool Segment::intersectVec(Segment other, double &t,
+inline double Det(double a, double b, double c, double d) {
+  return a * d - b * c;
+}
+
+bool Segment::intersectVec(const Segment other, double &t,
                            Segment::Point &where) const {
-  // 1. Determinefortherayandforeachmirrorthecoeﬃcients a,b,c oftheequation
-  // ax + bx + cy = 0 that describes the line on which the ray respectively the
-  // mirror lies. From this determinetheintersectionpointofbothlines.
+  // from specification:
+  // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
+  // equation ax + bx + cy = 0 that describes the line on which the ray
+  // respectively the mirror lies. From this determine the intersection point of
+  // both lines.
   // ------ I don't get it. What x, x and y is meant? Therefore I will implement
   // a well working algorithm that gets the solution in a good time - knowing
   // a non hit relative fast.
 
-  // check if points of other lies left and right of this segment
+  // check if points of other lie left and right of this segment
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
-  if (signbit(p0) == signbit(p1) && p0 != 0 && p1 != 0) {
-    // we definitely do not hit a Segment if startpoint and endpoint of it lies
+  if (signbit(p0) == signbit(p1) && abs(p0) > TOLERANCE && abs(p1) > TOLERANCE) {
+    // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
     // this points. Do the fact, that even a little miss like the defined
     // "| d1 - d2 | < a" will go outside, we can ignore the tolerance - we hit
@@ -230,7 +239,7 @@ bool Segment::intersectVec(Segment other, double &t,
   // Lets find the intersection Point with Cramer's rule:
   // x = (c1*b2-b1*c2)/(a1*b2-b1*a2)
   // y = (a1*c2-c1*a2)/(a1*b2-b1*a2)
-
+/*
   // find a1x+b1y=c1
   double a1 = endPoint.y - startPoint.y;
   double b1 = startPoint.x - endPoint.x;
@@ -241,11 +250,43 @@ bool Segment::intersectVec(Segment other, double &t,
   double c2 = a2 * (other.startPoint.x) + b2 * (other.startPoint.y);
 
   double det = a1 * b2 - b1 * a2; // we should already know this is != 0
-  if (det == 0) {
+  if (det == 0) { // 0 if parallel
     std::cerr << "det is 0, that should not happen" << std::endl;
     return false;
   }
   where = Point((c1 * b2 - b1 * c2) / det, (a1 * c2 - c1 * a2) / det);
+*/
+
+/*  const double det = (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
+          (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
+
+  double pre = (startPoint.x*endPoint.y - startPoint.y*endPoint.x);
+  double post = (other.startPoint.x*other.endPoint.y - other.startPoint.y*other.endPoint.x);
+
+  double x = (pre * (other.startPoint.x-other.endPoint.x)-(startPoint.x-endPoint.x) * post) / det;
+  double y = (pre * (other.startPoint.y-other.endPoint.y)-(startPoint.y-endPoint.y) * post) / det;
+
+  where = Point(x,y);
+*/
+
+  double detL1 = Det(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+  double detL2 = Det(other.startPoint.x, other.startPoint.y, other.endPoint.x, other.endPoint.y);
+  double x1mx2 = startPoint.x - endPoint.x;
+  double x3mx4 = other.startPoint.x - other.endPoint.x;
+  double y1my2 = startPoint.y - endPoint.y;
+  double y3my4 = other.startPoint.y - other.endPoint.y;
+
+  double xnom = Det(detL1, x1mx2, detL2, x3mx4);
+  double ynom = Det(detL1, y1my2, detL2, y3my4);
+  double denom = Det(x1mx2, y1my2, x3mx4, y3my4);
+  if (denom == 0.0)//Lines don't seem to cross
+  {
+    return false;
+  }
+  double ixOut = xnom / denom;
+  double iyOut = ynom / denom;
+
+  where = Point(ixOut, iyOut);
 
   t = Segment(startPoint, where).norm() / norm();
 

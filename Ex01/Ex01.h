@@ -64,26 +64,77 @@
 // drawn pixels per draw
 #define D 1
 // red dot radius
-#define R 5
+#define R 6
 
 // tolerance
-#define TOLERANCE 1e-9
+#define TOLERANCE 1e-12
 
 using namespace std;
 using namespace compsys;
 
+/**
+ * Enum for init opitions
+ */
 enum options {
   RANDOM_INPUT = 1, FILE_INPUT = 2
 };
 
-void init(/*in*/ int option, const char **filename,
+/**
+ * Set up ray and mirrors, based on program arguments.
+ * For random, the will have a length of least 1.
+ * @param option See enum options, it's set from argc (Argument count)
+ *        RANDOM_INPUT: ray and mirrors are set randomly. mirrorCount := N + 4
+ *        FILE_INPUT: ray, mirrorCount and mirrors will be read from file.
+ * @param filename Filename where ray and mirrors are loaded from if FILE_INPUT
+ * @param ray read or randomized light ray
+ * @param mirrorCount read from file or set to N + 4 (WALLCOUNT)
+ * @param mirrors
+ */
+void init(/*in*/ const int option, const char **filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
-void drawMirrors(int mirrorCount, Segment mirrors[]);
+/**
+ * Draw Mirrors
+ * Start with draw a white filled rectangle of Applications windows size.
+ * Afterward it draws all mirrors in blue.
+ * @param mirrorCount Number of mirrors to draw.
+ * @param mirrors Array of mirrors.
+ */
+void drawMirrors(const int mirrorCount, const Segment mirrors[]);
 
+/**
+ * Animate the drawing of the light ray.
+ * Draws it in RED.
+ * Draws lines with D pixels (=length), sets start and endpoints with the
+ * midpoint algorithm - to get nice results.
+ * @param ray Light ray that will be animated from startPoint to endPoint.
+ */
 void drawRay(const Segment& ray);
 
+/**
+ * Mirror and wall version. Ray will be reflected from all in mirrors.
+ * @param mirrorCount Number of elements in mirrors.
+ * @param mirrors mirrors array. Nearest one on the way of the ray is reflection
+ *        target.
+ * @param ray Light ray. It endPoint will be updated to the point where it hits
+ *        the nearest mirror on its way.
+ * @param rayflection startPoint is the endPoint of the ray. endPoint
+ */
 void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], Segment &ray,
+        /*out*/ Segment &rayflection);
+
+/**
+ * Wall only version. Ray will be reflected on the walls - this are the mirrors
+ * 0 to 3.
+ * @param mirrorCount not used
+ * @param mirrors Array of mirrors, in this we only use the first 4, that are
+ *        defined to be the wall.
+ * @param ray our ray, its endpoint will be updated to the point where it hits
+ *        the mirror/wall.
+ * @param rayflection the reflected ray, with endpoint of ray as startpoint, and
+ *        a modified vector of the rays vector.
+ */
+void reflectRayOld(/*in*/const int mirrorCount, const Segment mirrors[], Segment &ray,
         /*out*/ Segment &rayflection);
 
 // inits a random ray, random mirrors and set mirrorCount to N+4
