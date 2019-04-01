@@ -125,8 +125,8 @@ void drawRay(const Segment &ray, unsigned int color = RED);
  *        the nearest mirror on its way.
  * @param rayflection startPoint is the endPoint of the ray. endPoint
  */
-void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], Segment &ray,
-        /*out*/ Segment &rayflection);
+void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[],
+                      Segment &ray, /*out*/ Segment &rayflection);
 
 /**
  * Wall only version. Ray will be reflected on the walls - this are the mirrors
@@ -139,26 +139,50 @@ void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[], Segment &r
  * @param rayflection the reflected ray, with endpoint of ray as startpoint, and
  *        a modified vector of the rays vector.
  */
-void reflectRayOld(/*in*/const int mirrorCount, const Segment mirrors[], Segment &ray,
-        /*out*/ Segment &rayflection);
+void reflectRayOld(/*in*/const int mirrorCount, const Segment mirrors[],
+                         Segment &ray, /*out*/ Segment &rayflection);
 
-// inits a random ray, random mirrors and set mirrorCount to N+4
-// ray and mirrors have a length of least 1 and values between 0 and W for x
-// and 0 and H for y
+/**
+ * inits a random ray, random mirrors and set mirrorCount to N+4 ray and mirrors
+ * have a length of least 1 and values between 0 and W for x and 0 and H for y
+ * @param ray randomized ray
+ * @param mirrorCount number of elements in mirrors array, defined as N+4
+ * @param mirrors randomized mirrors, can intersect with etch other
+ */
 void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
 
-// inits ray, mirrorCount and mirrors from given filename
-// will open file from filename and close it
+/**
+ * inits ray, mirrorCount and mirrors from given filename will open file from
+ * filename and close it
+ * @param filename
+ * @param ray
+ * @param mirrorCount
+ * @param mirrors
+ */
 void fileInit(/*in*/ const string& filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
-// prints values to stdout
+/**
+ * prints values to stdout
+ * @param ray light ray
+ * @param count number of elements in mirrors array
+ * @param mirrors mirrors array
+ */
 void printValues(const Segment& ray, const int count, const Segment mirrors[]);
 
-// rand between min (incl.) and max (excl.)
+/**
+ * rand between min (incl.) and max (excl.)
+ * @param min lower bound (inclusive)
+ * @param max upper bound (exclusive)
+ * @return a number from {min, min+1, ..., max-2, max-1}
+ */
 int rand(int min, int max);
 
-// rand from 0 (incl.) to max (excl.)
+/**
+ * rand from 0 (incl.) to max (excl.)
+ * @param max uppber bound (exclusive)
+ * @return a number from {0, 1, ..., max-2, max-1}
+ */
 int rand(int max) { return rand(0, max); }
 
 // given and unmodified main method from specification Ex01

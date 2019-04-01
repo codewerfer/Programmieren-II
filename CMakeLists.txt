@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("ProgrammierenII" CXX)
 
-set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS ON)
 # Schließen Sie Unterprojekte ein.
 
 add_subdirectory ("Drawing")

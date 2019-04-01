@@ -4,8 +4,9 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
-add_executable (Ex01 "Ex01.cpp")
+add_library(Segment Segment.cpp)
+add_executable(Ex01 Ex01.cpp)
 
-target_link_libraries(Ex01 Drawing)
+target_link_libraries(Ex01 Drawing Segment)
 
 # TODO: Fügen Sie bei Bedarf Tests hinzu, und installieren Sie Ziele.

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------
 // Segment.h
-// Header file for Segment class
+// Header file for Segment and SegmentVec classes
 //
 // Author: Jürgen Vogl <codewerfer>
 // Last Modification: 23.03.2019
@@ -10,116 +10,233 @@
 
 #pragma once
 
-// tolerance
-#define TOLERANCE 1e-12
+/**
+ * Tolerance
+ */
+#define TOL 1e-12
 
 #include <sstream>
 
+/**
+ * Segment class
+ * represents a Segment as a line from a start-point to an endpoint
+ * delivers methods to manipulate segments and interacting between segments
+ */
 class Segment {
 public:
-  // Point structure
+  /**
+   * Point structure
+   * 2 double coordinates in an euclidean 2D system
+   */
   struct Point {
-    double x;
-    double y;
+    double x; /** x coordinate */
+    double y; /** y coordinate */
 
   public:
+    /**
+     * default constructor
+     */
     Point() = default;
 
+    /**
+     * constructor that accepts 2 coordinates as double values
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     Point(double x, double y) : x(x), y(y) {}
 
+    /**
+     * copy constructor
+     * @param p creates a copy of p
+     */
     Point(const Point &p) : x(p.x), y(p.y) {}
 
+    /**
+     * divides each coordinate by i, no rest
+     * @param i divisor
+     * @return (x/i, y/i)
+     */
     Point operator/(int i) const {
       return Point(x / i, y / i);
     }
 
+    /**
+     * divides this by i, no rest
+     * @param i divisor
+     * @return (x/i, y/i)
+     */
     Point operator/=(int i) {
       x /= i;
       y /= i;
       return *this;
     }
 
+    /**
+     * multiplies each coordinate by i
+     * @param i multiplier
+     * @return (x*i, y*i)
+     */
     Point operator*(int i) const {
       return Point(x * i, y * i);
     }
 
+    /**
+     * negation of each coordinate
+     * @return (-x, -y)
+     */
     Point operator-() const {
       return Point(-x, -y);
     }
 
+    /**
+     * addition of two points
+     * @param other other point
+     * @return (x+other.x, y+other.y)
+     */
     Point operator+(Point other) const {
       return Point(x + other.x, y + other.y);
     }
 
+    /**
+     * substration of other point
+     * @param other subtractor
+     * @return this + (-other)
+     */
     Point operator-(Point other) const {
       return Point(x - other.x, y - other.y);
     }
 
+    /**
+     * good old << operator for cout etc.
+     * @param stream ostream input
+     * @param p point for printing, prints "p.x p.y"
+     * @return ostream output
+     */
     friend std::ostream &operator<<(std::ostream &stream, const Point &p);
   };
 
-  // default constructor
+  /**
+   * default constructor
+   */
   Segment() {}
 
-  // constructor from 2 Points
+  /**
+   * constructor from 2 points
+   * @param start startpoint
+   * @param end endpoint
+   */
   Segment(Point start, Point end) : startPoint(start), endPoint(end) {}
 
-  // constructor from 4 values
+  /**
+   * constructor from 4 values representing 2 coordinates
+   * @param x0 x value of startpoint
+   * @param y0 y value of startpoint
+   * @param x1 x value of endpoint
+   * @param y1 y value of endpoint
+   */
   Segment(double x0, double y0,
           double x1, double y1) : startPoint(x0, y0), endPoint(x1, y1) {}
 
-  // constructor that parses a string to Segment
+  /**
+   * Parses string "x0 y0 x1 y1" to a Segment
+   * @param str input string of form "x0 y0 x1 y1"
+   */
   Segment(const std::string str) {
-    std::stringstream(str) >>
-                           startPoint.x >> std::ws >> startPoint.y >> std::ws >>
-                           endPoint.x >> std::ws >> endPoint.y;
+    std::stringstream(str) >> startPoint.x >> std::ws >> startPoint.y >> std::ws
+                           >> endPoint.x >> std::ws >> endPoint.y;
   }
 
+  /**
+   * returns the segment as vector
+   * @return (x1-x0, y1-y0)
+   */
   Point vec() const;
 
-  // returns Euclidean length of vector
+  /**
+   * returns euclidean length of vector
+   * @return sqrt(vec.x^2, vec.y^2)
+   */
   double norm() const;
 
   /**
-   * return signed normalized distance of a point to this segment
+   * return signed normalized distance of a point to this segment, that is the
+   * length of the shortest line and lies orthogonal to this segment.
    * @param p Point we want to measure
-   * @return normalized distance (real distance)
+   * @return normalized distance (real euclidean distance)
    */
   double distance(Point p) const;
 
   /**
-   * return signed not normalized distance of a point to this segment
+   * return signed not normalized distance of a point to this segment, values
+   * are not normalized. Therefore, values of different points for the same
+   * segment are comparable, especially the sign make a statement on what side
+   * the point lies.
    * @param p Point we want to measure
    * @return not normalized distance (sign gives us information if point lies
-   * left or right of vector)
+   * left (+) or right (-) of the (direction of the) vector)
    */
   double distanceFast(Point p) const;
 
+  /**
+   * Orthographic projection of the point on the ray.
+   *
+   * Real euclidean distance from startpoint to orthographic projection of p.
+   *
+   * Imagine you light with an infinite far away light source that lies on a
+   * 90° corner toward the ray on the side of the point. Then the result of this
+   * method is the shadow of the point on the ray.
+   * @param p point we want to project on the ray
+   * @return euclidean distance of the points orthographic projection toward the
+   *         ray. Can go over and under "the ray". Negative value means values
+   *         before the startpoint.
+   */
   double orthoDist(Point p) const;
 
+  /**
+   * Orthographic projection of the point on the ray.
+   *
+   * Not the euclidean distance. Different points for the same segment are
+   * comparable, positive is "behind" the startpoint, negative "infront" the
+   * startpoint.
+   *
+   * Imagine you light with an infinite far away light source that lies on a
+   * 90° corner toward the ray on the side of the point. Then the result of this
+   * method is the shadow of the point on the ray.
+   * @param p point we want to project on the ray
+   * @return not normalized distance of the points orthographic projection
+   *         toward the ray. Comparable for a given segment. Lower is near,
+   *         negative is away from vector
+   */
   double orthoDistFast(Point p) const;
 
   /**
-   * returns intersect of this segment as vector with other, how "far" away
-   * it is - in times of norm - and where this intersect point lies - it there
-   * is one
+   * returns intersection point of this segment with other as where. Return
+   * boolean if we found one or not.
    * @param[in] other other Segment, that this one wants to hit
-   * @param[out] t positiv if it lies in vec direction, negativ in others
-   * @param[out] where Point where the intersection is (startpoint + t*vec)
-   * @return true if there is a solution, false if not - t and where are not
-   * valid in this case.
+   * @param[out] where Point where the intersection happens
+   * @return true if there is a solution, false if not
    */
   bool intersectVec(const Segment other, Point &where) const;
 
+  /**
+   * not a general working solution, but works for walls very fine.
+   * @param other othe Segment, that this one wants to hit
+   * @param where Point where the intersection happens
+   * @return true if there is a solution, false if not
+   */
   bool intersectVecOld(const Segment other, Point &where) const;
 
-  // let Segment be interoperable with cout
+  /**
+   * good old ostream for cout etc.
+   * @param stream ostream input
+   * @param seg output of segment in form "p0 p1" - calls same operator of point
+   * @return ostream output
+   */
   friend std::ostream &operator<<(std::ostream &stream, const Segment &seg);
 
-  // absolute start point of segment
-  Point startPoint;
-  // absolute end point of segment
-  Point endPoint;
+
+  Point startPoint; /** absolute startpoint of the segment */
+  Point endPoint; /** absolute endpoint of segment */
 private:
   // determinate
   double det() const;
@@ -130,13 +247,15 @@ private:
   // determinate of segment
   static double det(Segment segment);
 
+  // normal vector of the segment as vector
   Segment normalVec() const;
 };
 
-std::ostream &operator<<(std::ostream &stream, const Segment::Point &p) {
-  return stream << p.x << " " << p.y;
-}
-
+/**
+ * Derived class of Segment, that represent a segment as a startpoint and a
+ * vector - instead a startpoint and an endpoint. Saves inside a startpoint
+ * and an endpoint.
+ */
 class SegmentVec : public Segment {
 protected:
   using Segment::startPoint;
@@ -144,12 +263,20 @@ protected:
 
 public:
 
-  SegmentVec(Point start, Point end) {
+  /**
+   * Constructor for 2 points
+   * @param start startpoint
+   * @param vec vector
+   */
+  SegmentVec(Point start, Point vec) {
     startPoint = start;
-    endPoint = startPoint + end;
+    endPoint = startPoint + vec;
   }
 
-  // constructor that parses a string to SegmentVec
+  /**
+   * Parses string "x0 y0 vec_x vec_y" to a Segment
+   * @param str input string of form "x0 y0 vec_x vec_y"
+   */
   SegmentVec(const std::string str) {
     std::istringstream stream(str);
 
@@ -164,160 +291,20 @@ public:
     endPoint.y = (n[3] + n[1]);
   }
 
+  /**
+   * Constructor that "casts" a Segment to a SegmentVec
+   * @param seg
+   */
   SegmentVec(const Segment seg) {
     Segment::startPoint = seg.startPoint;
     Segment::endPoint = seg.endPoint;
   }
 
+  /**
+   * Good old ostream for cout etc.
+   * @param stream ostream input
+   * @param ray "x y vec_x vec_y"
+   * @return ostream output
+   */
   friend std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray);
 };
-
-std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
-  stream << ray.startPoint << " " <<
-         ray.endPoint - ray.startPoint;
-  return stream;
-}
-
-double Segment::norm() const {
-  return sqrt(pow(endPoint.x - startPoint.x, 2) +
-              pow(endPoint.y - startPoint.y, 2));
-}
-
-double Segment::distance(Segment::Point p) const {
-  // dnorm = d/norm()
-  return distanceFast(p) / norm();
-}
-
-double Segment::distanceFast(Segment::Point p) const {
-  // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
-  return ((p.x - startPoint.x) * (endPoint.y - startPoint.y)
-          - (p.y - startPoint.y) * (endPoint.x - startPoint.x));
-}
-
-double Segment::det(Segment::Point a, Segment::Point b) {
-  return a.x * b.y - a.y * b.x;
-}
-
-double Segment::det() const {
-  return det(startPoint, endPoint);
-}
-
-double Segment::det(Segment segment) {
-  return segment.det();
-}
-
-std::ostream &operator<<(std::ostream &stream, const Segment &seg) {
-  stream << seg.startPoint << " " << seg.endPoint;
-  return stream;
-}
-
-Segment::Point Segment::vec() const {
-  return Segment::Point(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-}
-
-inline double Det(double a, double b, double c, double d) {
-  return a * d - b * c;
-}
-
-bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
-  // from specification:
-  // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
-  // equation ax + bx + cy = 0 that describes the line on which the ray
-  // respectively the mirror lies. From this determine the intersection point of
-  // both lines.
-  // ------ I don't get it. What x, x and y is meant? Therefore I will implement
-  // a well working algorithm that gets the solution in a good time - knowing
-  // a non hit relative fast.
-
-  // check if points of other lie left and right of this segment
-  double p0 = distanceFast(other.startPoint);
-  double p1 = distanceFast(other.endPoint);
-  if (signbit(p0) == signbit(p1) && abs(p0) > TOLERANCE && abs(p1) > TOLERANCE) {
-    // we definitely do not hit a Segment if startPoint and endPoint of it lie
-    // both on the same side of our vector. Special case is if we hit one of
-    // this points. Do the fact, that even a little miss like the defined
-    // "| d1 - d2 | < a" will go outside, we can ignore the tolerance - we hit
-    // or we miss, otherwise we could say "we hit" if we miss at tolerance "a"
-    // or "we miss" if we hit at tolerance "a". Also we can ignore the division
-    // by the normal.
-    return false;
-  }
-
-  const double det =
-          (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
-          (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
-
-  if (signbit(p0) == signbit(det)) { std::cout << "+" << std::endl; }
-  else { std::cout << "--" << std::endl; }
-
-  if (det == 0) {
-    return false;
-  }
-
-  double pre = this->det();
-  double post = other.det();
-
-  double x = (pre * (other.startPoint.x - other.endPoint.x) -
-              (startPoint.x - endPoint.x) * post) / det;
-  double y = (pre * (other.startPoint.y - other.endPoint.y) -
-              (startPoint.y - endPoint.y) * post) / det;
-
-  where = Point(x,y);
-
-  return true;
-}
-
-bool Segment::intersectVecOld(const Segment other, Segment::Point &where) const {
-  // from specification:
-  // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
-  // equation ax + bx + cy = 0 that describes the line on which the ray
-  // respectively the mirror lies. From this determine the intersection point of
-  // both lines.
-  // ------ I don't get it. What x, x and y is meant? Therefore I will implement
-  // a well working algorithm that gets the solution in a good time - knowing
-  // a non hit relative fast.
-
-  // check if points of other lie left and right of this segment
-  double p0 = distanceFast(other.startPoint);
-  double p1 = distanceFast(other.endPoint);
-  if (signbit(p0) == signbit(p1) && abs(p0) > TOLERANCE && abs(p1) > TOLERANCE) {
-    // we definitely do not hit a Segment if startPoint and endPoint of it lie
-    // both on the same side of our vector. Special case is if we hit one of
-    // this points. Do the fact, that even a little miss like the defined
-    // "| d1 - d2 | < a" will go outside, we can ignore the tolerance - we hit
-    // or we miss, otherwise we could say "we hit" if we miss at tolerance "a"
-    // or "we miss" if we hit at tolerance "a". Also we can ignore the division
-    // by the normal.
-    return false;
-  }
-
-  const double det =
-          (endPoint.x - startPoint.x) * (other.endPoint.y - other.startPoint.y) -
-          (endPoint.y - startPoint.y) * (other.endPoint.x - other.startPoint.x);
-
-  if (det <= 0) {
-    return false;
-  }
-
-  double pre = this->det();
-  double post = other.det();
-
-  double x = (pre * (other.startPoint.x - other.endPoint.x) - (startPoint.x - endPoint.x) * post) / det;
-  double y = (pre * (other.startPoint.y - other.endPoint.y) - (startPoint.y - endPoint.y) * post) / det;
-
-  where = Point(x, y);
-
-  return true;
-}
-
-double Segment::orthoDistFast(Segment::Point p) const {
-  return normalVec().distanceFast(p);
-}
-
-Segment Segment::normalVec() const {
-  return SegmentVec(startPoint, Point(-vec().y, vec().x));
-}
-
-double Segment::orthoDist(Segment::Point p) const {
-  return normalVec().distance(p);
-}
