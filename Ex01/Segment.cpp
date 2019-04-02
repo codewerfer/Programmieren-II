@@ -3,7 +3,7 @@
 // implementation of Segment and SegmentVec classes
 //
 // Author: Jürgen Vogl <k1355432>
-// Last Modification: 02.02.2019
+// Last Modification: 03.02.2019
 //
 // (c) Jürgen Vogl, 2019
 // (c) ID Software Inc., 1999-2005
@@ -286,8 +286,8 @@ bool Segment::reflect(const Segment &inRay, Segment &outRay,
                       bool checked) const {
   // ensure inRay.endpoint "touches" segment, can be skipped if known
   if (!checked) {
-    Point hitpoint{};
-    if (!intersectVec(inRay, hitpoint) || hitpoint != inRay.endPoint) {
+    Point hitPoint{};
+    if (!intersectVec(inRay, hitPoint) || hitPoint != inRay.endPoint) {
       return false;
     }
   }

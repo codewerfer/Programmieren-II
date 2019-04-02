@@ -3,7 +3,7 @@
 // Header file for Segment and SegmentVec classes
 //
 // Author: Jürgen Vogl <k1355432>
-// Last Modification: 02.02.2019
+// Last Modification: 03.02.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
