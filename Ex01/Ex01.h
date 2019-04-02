@@ -2,11 +2,19 @@
 // Ex01.h
 // Header file for Exercise 1.
 //
-// Author: Jürgen Vogl <codewerfer>
-// Last Modification: 23.03.2019
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 02.02.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
+
+// slowdown (wait on drawRay) for to fast computers
+// comment in/out for using
+//#define SLOWDOWN
+
+// WALL Version
+// use ray
+//#define WALLVERSION
 
 #pragma once
 
@@ -18,8 +26,10 @@
 #include <string>
 #include <algorithm>
 
+#ifdef SLOWDOWN
 #include <chrono>
 #include <thread>
+#endif
 
 #ifdef _WIN32
 
@@ -46,7 +56,7 @@
 
 // random room definitions - as used with argc 1
 // number of mirrors
-#define N 2
+#define N 8
 // number of walls
 #define WALLCOUNT 4
 // room boundaries
@@ -71,7 +81,7 @@
 // red dot radius
 #define R 6
 
-// tolerance
+// tolerance (not really used, this code is intolerant «^.^» )
 #define TOLERANCE 1e-9
 
 using namespace std;
@@ -159,7 +169,7 @@ void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors);
  * @param mirrorCount
  * @param mirrors
  */
-void fileInit(/*in*/ const string& filename,
+void fileInit(/*in*/ const string &filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 /**
@@ -185,8 +195,10 @@ int rand(int min, int max);
  */
 int rand(int max) { return rand(0, max); }
 
-// given and unmodified main method from specification Ex01
+// given and unmodified* main method from specification Ex01
 // argc is used as an option, 1 is random, 2 is read of a file
 // argv is the filename
 // more arguments will result in an random run
+//
+// *: added preprocessor definition to switch between both versions
 int main(int argc, const char *argv[]);

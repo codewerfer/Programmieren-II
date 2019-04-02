@@ -1,9 +1,9 @@
 ﻿// ---------------------------------------------------------
 // Ex01.cpp
-// class File for file manipulation and associated operations.
+// Source file for Exercise 1
 //
-// Author: Jürgen Vogl <codewerfer>
-// Last Modification: 31.03.2019
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 02.02.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
@@ -16,14 +16,18 @@ int main(int argc, const char *argv[]) {
 #else
   beginDrawing(W, H, "Laser", 0xFFFFFF);
 #endif
-  Segment ray;
+  Segment ray{};
   int n;
   Segment *mirrors;
   init(argc, argv, ray, n, mirrors);
   drawMirrors(n, mirrors);
   for (int i = 0; i < T; i++) {
     Segment ray0;
+#ifdef WALLVERSION
+    reflectRayOld(n, mirrors, ray, ray0);
+#else
     reflectRay(n, mirrors, ray, ray0);
+#endif
     drawRay(ray);
     ray = ray0;
   }
@@ -141,8 +145,10 @@ void drawRay(const Segment &ray, unsigned int color) {
     drawLine(lround(start.x), lround(start.y),
              lround(end.x), lround(end.y), color);
     start = end + vec;
+#ifdef SLOWDOWN
     // it's running very fast on my computer, therefore, I have to slow it down
-    //this_thread::sleep_for(chrono::milliseconds(5));
+    this_thread::sleep_for(chrono::milliseconds(5));
+#endif
   }
 
   if (r % D != 0) // final step if missing
@@ -210,7 +216,8 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
     }
   }
   if (!found) {
-    cout << "No wall found. Abort.";
+    cout << "No wall found. Abort." << endl <<
+         "You may be too tolerant ;)";
     exit(3);
   }
 
@@ -218,11 +225,25 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
   lastMirror = nearstIndex;
 
   // reflect on mirror
-  if (!mirrors[lastMirror].reflect(ray, rayflection)) {
+  if (!mirrors[lastMirror].reflect(ray, rayflection, true)) {
     cout << "Refection failed, ray doesn't intersect mirror on intersection"
-            "point" << endl;
-    //exit(4);
+            "point." << endl;
+    exit(4);
   }
+#ifdef _DEBUG
+  {
+    // draw reflected ray
+    drawRay(rayflection, CYAN);
+    stringstream s4;
+    // print distance of mirrors[i] start and endpoint to ray
+    s4 << ray.distance(rayflection.endPoint)
+    << " (" << rayflection.endPoint << ")";
+
+    drawText((int) rayflection.endPoint.x + R,
+             (int) rayflection.endPoint.y,
+             s4.str().c_str());
+  }
+#endif
 
   delete[] points;
 }

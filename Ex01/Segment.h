@@ -2,8 +2,8 @@
 // Segment.h
 // Header file for Segment and SegmentVec classes
 //
-// Author: Jürgen Vogl <codewerfer>
-// Last Modification: 23.03.2019
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 02.02.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
@@ -18,8 +18,17 @@
 /**
  * Uses typical CG algorithms - see Tiger Book, Quake III
  * Comment out for provided algorithm for reflectRay
+ *
+ * CG_AGLO1: reflectRay optimized as: r = d - 2(d*n)n
+ *           No difference on input.txt.
+ *
+ * CG_ALGO2: use of inverseSqrt
+ * ATTENTION: Do the fact, that this algorithm uses an approximation of
+ *            1/sqrt(x*x+y*y), the result differs a little bit - enough that the
+ *            input.txt example gets another end if 2nd iteration is comment out
  */
-#define CG_ALGO
+#define CG_ALGO1
+#define CG_ALGO2
 
 #include <sstream>
 
@@ -43,6 +52,7 @@ public:
      * default constructor
      */
     Point() = default;
+    // operator/=<int>(1); // this would compile operator for int if in cpp
 
     /**
      * constructor that accepts 2 coordinates as double values
@@ -55,19 +65,18 @@ public:
      * copy constructor
      * @param p creates a copy of p
      */
-    Point(const Point &p) : x(p.x), y(p.y) {}
+    Point(const Point &p) = default;
 
     /**
      * length of vector
      * @return
      */
-    double norm() {
-      return sqrt(x * x + y * y);
-    }
+    double norm();
 
-    Point normalized() {
-      return Point(x / norm(), y / norm());
-    }
+    Point normalized();
+
+    // overloaded operators, all are as of cpp standard
+    // https://en.cppreference.com/w/cpp/language/operator_comparison
 
     /**
      * divides each coordinate by i, no rest
@@ -75,9 +84,7 @@ public:
      * @return (x/i, y/i)
      */
     template<class T>
-    Point operator/(T i) const {
-      return Point(x / i, y / i);
-    }
+    Point operator/(const T &i) const;
 
     /**
      * divides this by i, no rest
@@ -85,7 +92,8 @@ public:
      * @return (x/i, y/i)
      */
     template<class T>
-    Point operator/=(T i) {
+    //can't tell it to compile with int if in cpp, Ex01 fails
+    Point &operator/=(const T &i) {
       x /= i;
       y /= i;
       return *this;
@@ -97,62 +105,48 @@ public:
      * @return (x*i, y*i)
      */
     template<class T>
-    Point operator*(T i) const {
-      return Point(x * i, y * i);
-    }
+    Point operator*(const T &i) const;
 
     /**
      * dot product
      * @param other
      * @return
      */
-    double operator*(Point other) {
-      return x * other.x + y * other.y;
-    }
+    double operator*(const Point &other);
 
     /**
      * negation of each coordinate
      * @return (-x, -y)
      */
-    Point operator-() const {
-      return Point(-x, -y);
-    }
+    Point operator-() const;
 
     /**
      * addition of two points
      * @param other other point
      * @return (x+other.x, y+other.y)
      */
-    Point operator+(Point other) const {
-      return Point(x + other.x, y + other.y);
-    }
+    Point operator+(const Point &other) const;
 
     /**
      * substration of other point
      * @param other subtractor
      * @return this + (-other)
      */
-    Point operator-(Point other) const {
-      return Point(x - other.x, y - other.y);
-    }
+    Point operator-(const Point &other) const;
 
     /**
      * compare operator, use TOL as tolerance
      * @param other point to compare with
      * @return true if x and y are same values as of other
      */
-    bool operator==(Point other) const {
-      return (abs(other.x - x) < TOL) && (abs(other.y - y) < TOL);
-    }
+    bool operator==(const Point &other) const;
 
     /**
      * ! compare operator, use TOL as tolerance
      * @param other point to !compare with
      * @return true if *this==other is false
      */
-    bool operator!=(Point other) const {
-      return !(*this == other);
-    }
+    bool operator!=(const Point &other) const;
 
     /**
      * Transforms a Vector to a Polar form
@@ -160,10 +154,7 @@ public:
      * @param r length
      * @param a angle
      */
-    static void toPolar(Point p, double &r, double &a) {
-      a = atan2(p.y, p.x);
-      r = sqrt(p * p);
-    }
+    static void toPolar(Point p, double &r, double &a);
 
     /**
      * Transforms a Polar form to a vetor
@@ -171,9 +162,7 @@ public:
      * @param a angle
      * @param p output vector
      */
-    static void toCartesian(double r, double a, Point &p) {
-      p = Point(r * cos(a), r * sin(a));
-    }
+    static void toCartesian(double r, double a, Point &p);
 
     /**
      * good old << operator for cout etc.
@@ -182,24 +171,20 @@ public:
      * @return ostream output
      */
     friend std::ostream &operator<<(std::ostream &stream, const Point &p);
-
-  private:
-    double normFactor() {
-      return 1 / norm();
-    }
   };
 
   /**
    * default constructor
    */
-  Segment() {}
+  Segment() = default;
 
   /**
    * constructor from 2 points
    * @param start startpoint
    * @param end endpoint
    */
-  Segment(Point start, Point end) : startPoint(start), endPoint(end) {}
+  Segment(const Point &start, const Point &end)
+          : startPoint(start), endPoint(end) {}
 
   /**
    * constructor from 4 values representing 2 coordinates
@@ -215,10 +200,7 @@ public:
    * Parses string "x0 y0 x1 y1" to a Segment
    * @param str input string of form "x0 y0 x1 y1"
    */
-  Segment(const std::string str) {
-    std::stringstream(str) >> startPoint.x >> std::ws >> startPoint.y >> std::ws
-                           >> endPoint.x >> std::ws >> endPoint.y;
-  }
+  explicit Segment(std::string str);
 
   /**
    * returns the segment as vector
@@ -286,19 +268,21 @@ public:
   /**
    * returns intersection point of this segment with other as where. Return
    * boolean if we found one or not.
+   *
+   * ATTENTION: This code is intolerant! - do not use TOLERANCE
    * @param[in] other other Segment, that this one wants to hit
-   * @param[out] where Point where the intersection happens
+   * @param[out] iPoint Point where the intersection happens
    * @return true if there is a solution, false if not
    */
-  bool intersectVec(const Segment &other, Point &where) const;
+  bool intersectVec(const Segment &other, Point &iPoint) const;
 
   /**
    * not a general working solution, but works for walls very fine.
    * @param other othe Segment, that this one wants to hit
-   * @param where Point where the intersection happens
+   * @param point Point where the intersection happens
    * @return true if there is a solution, false if not
    */
-  bool intersectVecOld(const Segment &other, Point &where) const;
+  bool intersectVecOld(const Segment &other, Point &iPoint) const;
 
   /**
    * Does the calculation to reflect inRay on this Segment to get outRay.
@@ -307,8 +291,10 @@ public:
    * method will return false.
    * @param inRay incoming ray
    * @param outRay outgoing ray
+   * @param checked if inRay already checked with intersectVec?
    */
-  bool reflect(const Segment &inRay, Segment &outRay) const;
+  bool reflect(const Segment &inRay, Segment &outRay,
+               bool checked = false) const;
 
   /**
    * good old ostream for cout etc.
@@ -329,9 +315,6 @@ private:
 
   // determinate of determinate between a and b
   static double det(const Point &a, const Point &b);
-
-  // determinate of segment
-  static double det(const Segment &segment);
 
   // normal of the segment
   Segment normal() const;
