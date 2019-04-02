@@ -105,7 +105,9 @@ public:
      * @return (x*i, y*i)
      */
     template<class T>
-    Point operator*(const T &i) const;
+    Point operator*(const T &i) const {
+      return Point(x * i, y * i);
+    }
 
     /**
      * dot product
@@ -298,15 +300,15 @@ public:
 
   /**
    * good old ostream for cout etc.
-   * @param stream ostream input
+   * {}@param stream ostream input
    * @param seg output of segment in form "p0 p1" - calls same operator of point
    * @return ostream output
    */
   friend std::ostream &operator<<(std::ostream &stream, const Segment &seg);
 
 
-  Point startPoint; /** absolute startpoint of the segment */
-  Point endPoint; /** absolute endpoint of segment */
+  Point startPoint{}; /** absolute startpoint of the segment */
+  Point endPoint{}; /** absolute endpoint of segment */
 
 
 private:
@@ -337,37 +339,19 @@ public:
    * @param start startpoint
    * @param vec vector
    */
-  SegmentVec(Point start, Point vec) {
-    startPoint = start;
-    endPoint = startPoint + vec;
-  }
+  SegmentVec(Point start, Point vec) : Segment(start, start + vec) {}
 
   /**
    * Parses string "x0 y0 vec_x vec_y" to a Segment
    * @param str input string of form "x0 y0 vec_x vec_y"
    */
-  SegmentVec(const std::string str) {
-    std::istringstream stream(str);
-
-    int n[4];
-    int i = 0;
-    while (stream) {
-      stream >> n[i++];
-    }
-    startPoint.x = (n[0]);
-    startPoint.y = (n[1]);
-    endPoint.x = (n[2] + n[0]);
-    endPoint.y = (n[3] + n[1]);
-  }
+  explicit SegmentVec(const std::string &str);
 
   /**
    * Constructor that "casts" a Segment to a SegmentVec
    * @param seg
    */
-  SegmentVec(const Segment seg) {
-    Segment::startPoint = seg.startPoint;
-    Segment::endPoint = seg.endPoint;
-  }
+  explicit SegmentVec(Segment seg);
 
   /**
    * Good old ostream for cout etc.

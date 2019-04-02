@@ -61,6 +61,22 @@ std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
   return stream;
 }
 
+SegmentVec::SegmentVec(const Segment seg) : Segment(seg) {}
+
+SegmentVec::SegmentVec(const std::string &str) : Segment() {
+  std::istringstream stream(str);
+
+  int n[4];
+  int i = 0;
+  while (stream) {
+    stream >> n[i++];
+  }
+  startPoint.x = (n[0]);
+  startPoint.y = (n[1]);
+  endPoint.x = (n[2] + n[0]);
+  endPoint.y = (n[3] + n[1]);
+}
+
 double Segment::norm() const {
 #ifdef CG_ALGO2
   return 1 / invsqrtQuake(pow(endPoint.x - startPoint.x, 2) +
@@ -104,10 +120,6 @@ std::ostream &operator<<(std::ostream &stream, const Segment &seg) {
 
 Segment::Point Segment::vec() const {
   return Segment::Point(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-}
-
-inline double Det(double a, double b, double c, double d) {
-  return a * d - b * c;
 }
 
 bool Segment::intersectVec(const Segment &other, Segment::Point &iPoint) const {
@@ -187,7 +199,7 @@ bool Segment::intersectVecOld(const Segment &other,
   );
 
   // get Wall in vec direction, otherwise, it would take the first one
-  if (det_inverse == NAN || signbit(det_inverse) == true) {
+  if (det_inverse == NAN || signbit(det_inverse)) {
     return false;
   }
 
@@ -237,11 +249,6 @@ Segment::Point Segment::Point::operator/(const T &i) const {
   return Point(x / i, y / i);
 }
 
-template<class T>
-Segment::Point Segment::Point::operator*(const T &i) const {
-  return Point(x * i, y * i);
-}
-
 double Segment::Point::operator*(const Segment::Point &other) {
   return x * other.x + y * other.y;
 }
@@ -279,7 +286,7 @@ bool Segment::reflect(const Segment &inRay, Segment &outRay,
                       bool checked) const {
   // ensure inRay.endpoint "touches" segment, can be skipped if known
   if (!checked) {
-    Point hitpoint;
+    Point hitpoint{};
     if (!intersectVec(inRay, hitpoint) || hitpoint != inRay.endPoint) {
       return false;
     }
