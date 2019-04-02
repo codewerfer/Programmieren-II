@@ -6,9 +6,49 @@
 // Last Modification: 31.03.2019
 //
 // (c) Jürgen Vogl, 2019
+// (c) ID Software Inc., 1999-2005
 // ----------------------------------------------------------
 
 #include "Segment.h"
+
+/**
+ * original fast inverse square root
+ * @param number some x*x+y*y+...
+ * @return 1/sqrt(x*x+y*y+...)
+ */
+float Q_rsqrt(float number) {
+  long i;
+  float x2, y;
+  const float threehalfs = 1.5F;
+
+  x2 = number * 0.5F;
+  y = number;
+  i = *(long *) &y;                     // evil floating point bit level hacking
+  i = 0x5f3759df - (i >> 1);            // what the fuck?
+  y = *(float *) &i;
+  y = y * (threehalfs - (x2 * y * y));  // 1st iteration
+//	y = y * (threehalfs - (x2 * y * y));// 2nd iteration, this can be removed
+
+  return y;
+}
+
+/**
+ * 64 bit way of Q_rsqrt
+ * @param number x*x+y*y+...
+ * @return 1/sqrt(x*x+y*y+...)
+ */
+double invsqrtQuake(double number) {
+  double y = number;
+  double x2 = y * 0.5;
+  std::int64_t i = *(std::int64_t *) &y;
+  // The magic number is for doubles is from
+  // https://cs.uwaterloo.ca/~m32rober/rsqrt.pdf
+  i = 0x5fe6eb50c7b537a9 - (i >> 1);
+  y = *(double *) &i;
+  y = y * (1.5 - (x2 * y * y));   // 1st iteration
+  // y  = y * ( 1.5 - ( x2 * y * y ) ); // 2nd iteration, this can be removed
+  return y;
+}
 
 std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
   stream << ray.startPoint << " " <<
@@ -17,22 +57,26 @@ std::ostream &operator<<(std::ostream &stream, const SegmentVec &ray) {
 }
 
 double Segment::norm() const {
-  return sqrt(pow(endPoint.x - startPoint.x, 2) +
-              pow(endPoint.y - startPoint.y, 2));
+  //return sqrt(pow(endPoint.x - startPoint.x, 2) +
+  //            pow(endPoint.y - startPoint.y, 2));
+  return 1 / invsqrtQuake(pow(endPoint.x - startPoint.x, 2) +
+                          pow(endPoint.y - startPoint.y, 2));
 }
 
-double Segment::distance(Segment::Point p) const {
+double Segment::distance(const Point &p) const {
   // dnorm = d/norm()
-  return distanceFast(p) / norm();
+  //return distanceFast(p) / norm();
+  return distanceFast(p) * invsqrtQuake(pow(endPoint.x - startPoint.x, 2) +
+                                        pow(endPoint.y - startPoint.y, 2));
 }
 
-double Segment::distanceFast(Segment::Point p) const {
+double Segment::distanceFast(const Point &p) const {
   // d = (x-x1)(y2-y1)-(y-y1)(x2-x1)
   return ((p.x - startPoint.x) * (endPoint.y - startPoint.y)
           - (p.y - startPoint.y) * (endPoint.x - startPoint.x));
 }
 
-double Segment::det(Segment::Point a, Segment::Point b) {
+double Segment::det(const Point &a, const Point &b) {
   return a.x * b.y - a.y * b.x;
 }
 
@@ -40,7 +84,7 @@ double Segment::det() const {
   return det(startPoint, endPoint);
 }
 
-double Segment::det(Segment segment) {
+double Segment::det(const Segment &segment) {
   return segment.det();
 }
 
@@ -57,7 +101,7 @@ inline double Det(double a, double b, double c, double d) {
   return a * d - b * c;
 }
 
-bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
+bool Segment::intersectVec(const Segment &other, Segment::Point &where) const {
   // from specification:
   // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
   // equation ax + bx + cy = 0 that describes the line on which the ray
@@ -71,7 +115,7 @@ bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
   if (signbit(p0) == signbit(p1)
-      && abs(p0) > TOL && abs(p1) > TOL) {
+      && abs(p0) > 0 && abs(p1) > 0) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
     // this points. Do the fact, that even a little miss like the defined
@@ -104,7 +148,7 @@ bool Segment::intersectVec(const Segment other, Segment::Point &where) const {
   return true;
 }
 
-bool Segment::intersectVecOld(const Segment other,
+bool Segment::intersectVecOld(const Segment &other,
                               Segment::Point &where) const {
   // from specification:
   // 1. Determine for the ray and foreach mirror the coeffcients a,b,c of the
@@ -152,18 +196,57 @@ bool Segment::intersectVecOld(const Segment other,
   return true;
 }
 
-double Segment::orthoDistFast(Segment::Point p) const {
-  return normalVec().distanceFast(p);
+double Segment::orthoDistFast(const Point &p) const {
+  return normal().distanceFast(p);
 }
 
-Segment Segment::normalVec() const {
+Segment Segment::normal() const {
   return SegmentVec(startPoint, Point(-vec().y, vec().x));
 }
 
-double Segment::orthoDist(Segment::Point p) const {
-  return normalVec().distance(p);
+double Segment::orthoDist(const Point &p) const {
+  return normal().distance(p);
 }
 
 std::ostream &operator<<(std::ostream &stream, const Segment::Point &p) {
   return stream << p.x << " " << p.y;
+}
+
+bool Segment::reflect(const Segment &inRay, Segment &outRay) const {
+  // ensure inRay.endpoint "touches" segment
+  //Point hitpoint;
+  //if(!intersectVec(inRay, hitpoint) || hitpoint != inRay.endPoint)
+  //  return false;
+
+#ifdef CG_ALGO
+  // r = d - 2(d*n)n
+
+  // r := reflect ray
+  // n := normalized normal vector of surface (or line in 2D case)
+  // d := ingoing vector
+  Point n = this->normal().vec().normalized();
+  Point d = inRay.vec();
+
+  Point r = d - n * 2 * (d * n);
+
+  outRay = SegmentVec(inRay.endPoint, r);
+#else
+  Point mirVec = this->normal().vec();
+  Point rayVec = -inRay.vec();
+
+  double mirLen;
+  double arcMir;
+  double rayLen;
+  double arcRay;
+  Point::toPolar(mirVec, mirLen, arcMir);
+  Point::toPolar(rayVec, rayLen, arcRay);
+
+  double phi = arcMir - arcRay;
+
+  Point outVec;
+  Point::toCartesian(rayLen, arcRay + 2*phi, outVec);
+
+  outRay = SegmentVec(inRay.endPoint, outVec);
+#endif
+  return true;
 }

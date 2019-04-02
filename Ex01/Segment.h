@@ -13,7 +13,13 @@
 /**
  * Tolerance
  */
-#define TOL 1e-12
+#define TOL 1e-9
+
+/**
+ * Uses typical CG algorithms - see Tiger Book, Quake III
+ * Comment out for provided algorithm for reflectRay
+ */
+#define CG_ALGO
 
 #include <sstream>
 
@@ -52,11 +58,24 @@ public:
     Point(const Point &p) : x(p.x), y(p.y) {}
 
     /**
+     * length of vector
+     * @return
+     */
+    double norm() {
+      return sqrt(x * x + y * y);
+    }
+
+    Point normalized() {
+      return Point(x / norm(), y / norm());
+    }
+
+    /**
      * divides each coordinate by i, no rest
      * @param i divisor
      * @return (x/i, y/i)
      */
-    Point operator/(int i) const {
+    template<class T>
+    Point operator/(T i) const {
       return Point(x / i, y / i);
     }
 
@@ -65,7 +84,8 @@ public:
      * @param i divisor
      * @return (x/i, y/i)
      */
-    Point operator/=(int i) {
+    template<class T>
+    Point operator/=(T i) {
       x /= i;
       y /= i;
       return *this;
@@ -76,8 +96,18 @@ public:
      * @param i multiplier
      * @return (x*i, y*i)
      */
-    Point operator*(int i) const {
+    template<class T>
+    Point operator*(T i) const {
       return Point(x * i, y * i);
+    }
+
+    /**
+     * dot product
+     * @param other
+     * @return
+     */
+    double operator*(Point other) {
+      return x * other.x + y * other.y;
     }
 
     /**
@@ -107,12 +137,56 @@ public:
     }
 
     /**
+     * compare operator, use TOL as tolerance
+     * @param other point to compare with
+     * @return true if x and y are same values as of other
+     */
+    bool operator==(Point other) const {
+      return (abs(other.x - x) < TOL) && (abs(other.y - y) < TOL);
+    }
+
+    /**
+     * ! compare operator, use TOL as tolerance
+     * @param other point to !compare with
+     * @return true if *this==other is false
+     */
+    bool operator!=(Point other) const {
+      return !(*this == other);
+    }
+
+    /**
+     * Transforms a Vector to a Polar form
+     * @param p input vector
+     * @param r length
+     * @param a angle
+     */
+    static void toPolar(Point p, double &r, double &a) {
+      a = atan2(p.y, p.x);
+      r = sqrt(p * p);
+    }
+
+    /**
+     * Transforms a Polar form to a vetor
+     * @param r length
+     * @param a angle
+     * @param p output vector
+     */
+    static void toCartesian(double r, double a, Point &p) {
+      p = Point(r * cos(a), r * sin(a));
+    }
+
+    /**
      * good old << operator for cout etc.
      * @param stream ostream input
      * @param p point for printing, prints "p.x p.y"
      * @return ostream output
      */
     friend std::ostream &operator<<(std::ostream &stream, const Point &p);
+
+  private:
+    double normFactor() {
+      return 1 / norm();
+    }
   };
 
   /**
@@ -164,7 +238,7 @@ public:
    * @param p Point we want to measure
    * @return normalized distance (real euclidean distance)
    */
-  double distance(Point p) const;
+  double distance(const Point &p) const;
 
   /**
    * return signed not normalized distance of a point to this segment, values
@@ -175,7 +249,7 @@ public:
    * @return not normalized distance (sign gives us information if point lies
    * left (+) or right (-) of the (direction of the) vector)
    */
-  double distanceFast(Point p) const;
+  double distanceFast(const Point &p) const;
 
   /**
    * Orthographic projection of the point on the ray.
@@ -190,7 +264,7 @@ public:
    *         ray. Can go over and under "the ray". Negative value means values
    *         before the startpoint.
    */
-  double orthoDist(Point p) const;
+  double orthoDist(const Point &p) const;
 
   /**
    * Orthographic projection of the point on the ray.
@@ -207,7 +281,7 @@ public:
    *         toward the ray. Comparable for a given segment. Lower is near,
    *         negative is away from vector
    */
-  double orthoDistFast(Point p) const;
+  double orthoDistFast(const Point &p) const;
 
   /**
    * returns intersection point of this segment with other as where. Return
@@ -216,7 +290,7 @@ public:
    * @param[out] where Point where the intersection happens
    * @return true if there is a solution, false if not
    */
-  bool intersectVec(const Segment other, Point &where) const;
+  bool intersectVec(const Segment &other, Point &where) const;
 
   /**
    * not a general working solution, but works for walls very fine.
@@ -224,7 +298,17 @@ public:
    * @param where Point where the intersection happens
    * @return true if there is a solution, false if not
    */
-  bool intersectVecOld(const Segment other, Point &where) const;
+  bool intersectVecOld(const Segment &other, Point &where) const;
+
+  /**
+   * Does the calculation to reflect inRay on this Segment to get outRay.
+   *
+   * The inRay needs to "touch" the segment with its endpoint. If not, the
+   * method will return false.
+   * @param inRay incoming ray
+   * @param outRay outgoing ray
+   */
+  bool reflect(const Segment &inRay, Segment &outRay) const;
 
   /**
    * good old ostream for cout etc.
@@ -237,18 +321,20 @@ public:
 
   Point startPoint; /** absolute startpoint of the segment */
   Point endPoint; /** absolute endpoint of segment */
+
+
 private:
   // determinate
   double det() const;
 
   // determinate of determinate between a and b
-  static double det(Point a, Point b);
+  static double det(const Point &a, const Point &b);
 
   // determinate of segment
-  static double det(Segment segment);
+  static double det(const Segment &segment);
 
-  // normal vector of the segment as vector
-  Segment normalVec() const;
+  // normal of the segment
+  Segment normal() const;
 };
 
 /**

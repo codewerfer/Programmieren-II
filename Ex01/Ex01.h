@@ -72,7 +72,7 @@
 #define R 6
 
 // tolerance
-#define TOLERANCE 1e-12
+#define TOLERANCE 1e-9
 
 using namespace std;
 using namespace compsys;
@@ -95,7 +95,7 @@ enum options {
  * @param mirrorCount read from file or set to N + 4 (WALLCOUNT)
  * @param mirrors
  */
-void init(/*in*/ const int option, const char **filename,
+void init(/*in*/ int option, const char **filename,
         /*out*/ Segment &ray, int &mirrorCount, Segment *&mirrors);
 
 /**
@@ -105,7 +105,7 @@ void init(/*in*/ const int option, const char **filename,
  * @param mirrorCount Number of mirrors to draw.
  * @param mirrors Array of mirrors.
  */
-void drawMirrors(const int mirrorCount, const Segment mirrors[]);
+void drawMirrors(int mirrorCount, const Segment mirrors[]);
 
 /**
  * Animate the drawing of the light ray.
@@ -125,7 +125,7 @@ void drawRay(const Segment &ray, unsigned int color = RED);
  *        the nearest mirror on its way.
  * @param rayflection startPoint is the endPoint of the ray. endPoint
  */
-void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[],
+void reflectRay(/*in*/int mirrorCount, const Segment mirrors[],
                       Segment &ray, /*out*/ Segment &rayflection);
 
 /**
@@ -139,7 +139,7 @@ void reflectRay(/*in*/const int mirrorCount, const Segment mirrors[],
  * @param rayflection the reflected ray, with endpoint of ray as startpoint, and
  *        a modified vector of the rays vector.
  */
-void reflectRayOld(/*in*/const int mirrorCount, const Segment mirrors[],
+void reflectRayOld(/*in*/int mirrorCount, const Segment mirrors[],
                          Segment &ray, /*out*/ Segment &rayflection);
 
 /**
@@ -168,7 +168,7 @@ void fileInit(/*in*/ const string& filename,
  * @param count number of elements in mirrors array
  * @param mirrors mirrors array
  */
-void printValues(const Segment& ray, const int count, const Segment mirrors[]);
+void printValues(const Segment &ray, int count, const Segment mirrors[]);
 
 /**
  * rand between min (incl.) and max (excl.)

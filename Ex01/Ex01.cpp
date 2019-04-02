@@ -115,8 +115,8 @@ void drawMirrors(const int mirrorCount, const Segment mirrors[]) {
 
   // draw mirrors
   for (int i = 0; i < mirrorCount; ++i) {
-    drawLine(mirrors[i].startPoint.x, mirrors[i].startPoint.y,
-             mirrors[i].endPoint.x, mirrors[i].endPoint.y, BLUE);
+    drawLine((int) mirrors[i].startPoint.x, (int) mirrors[i].startPoint.y,
+             (int) mirrors[i].endPoint.x, (int) mirrors[i].endPoint.y, BLUE);
   }
 }
 
@@ -134,7 +134,7 @@ void drawRay(const Segment &ray, unsigned int color) {
 
   int steps = r / D;
   Segment::Point start = ray.startPoint;
-  Segment::Point end;
+  Segment::Point end{};
 
   for (int i = 0; i < steps; ++i) {
     end = start + vec * (D - 1);
@@ -147,21 +147,22 @@ void drawRay(const Segment &ray, unsigned int color) {
 
   if (r % D != 0) // final step if missing
     drawLine(lround(start.x), lround(start.y),
-             ray.endPoint.x, ray.endPoint.y, color);
+             (int) ray.endPoint.x, (int) ray.endPoint.y, color);
 
   // draw dot
-  fillEllipse(ray.endPoint.x - R / 2, ray.endPoint.y - R / 2, R, R, color);
+  fillEllipse((int) ray.endPoint.x - R / 2, (int) ray.endPoint.y - R / 2,
+              R, R, color);
 }
 
 void reflectRay(const int mirrorCount, const Segment mirrors[],
                 Segment &ray, Segment &rayflection) {
   // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
   static int lastMirror = -1;
-  Segment::Point poi;
+  Segment::Point poi{};
   bool found = false;
-  int nearstIndex;
+  int nearstIndex = 0;
   double nearestNorm = HUGE_VAL;
-  Segment::Point *points = new Segment::Point[mirrorCount];
+  auto *points = new Segment::Point[mirrorCount];
 #ifdef _DEBUG
   drawRay(ray, GREEN);
 #endif
@@ -175,11 +176,11 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
       // print distance of mirrors[i] start and endpoint to ray
       s1 << ray.distance(mirrors[i].startPoint) << " (" << mirrors[i].startPoint << ")";
       s2 << ray.distance(mirrors[i].endPoint) << " (" << mirrors[i].endPoint << ")";
-      drawText(mirrors[i].startPoint.x + R,
-               mirrors[i].startPoint.y,
+      drawText((int)mirrors[i].startPoint.x + R,
+              (int)mirrors[i].startPoint.y,
                s1.str().c_str());
-      drawText(mirrors[i].endPoint.x + R,
-               mirrors[i].endPoint.y,
+      drawText((int)mirrors[i].endPoint.x + R,
+              (int)mirrors[i].endPoint.y,
                s2.str().c_str());
     }
 #endif
@@ -193,10 +194,10 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
       {
         stringstream s3;
         // draw possible hits on rays way
-        drawRectangle(poi.x - R / 2, poi.y - R / 2, R, R, BLACK);
+        drawRectangle((int)poi.x - R / 2, (int)poi.y - R / 2, R, R, BLACK);
 
         s3 << ray.orthoDist(poi) << " (" << poi << ")";
-        drawText(poi.x + R, poi.y, s3.str().c_str());
+        drawText((int)poi.x + R, (int)poi.y, s3.str().c_str());
       }
 #endif
       found = true;
@@ -216,12 +217,13 @@ void reflectRay(const int mirrorCount, const Segment mirrors[],
   ray.endPoint = points[nearstIndex];
   lastMirror = nearstIndex;
 
-  // reflect on wall, easy version, just flip sign of x/y - depends what we hit
-  if (mirrors[nearstIndex].startPoint.x == mirrors[nearstIndex].endPoint.x) {
-    rayflection = SegmentVec(poi, Segment::Point(-ray.vec().x, ray.vec().y));
-  } else {
-    rayflection = SegmentVec(poi, Segment::Point(ray.vec().x, -ray.vec().y));
+  // reflect on mirror
+  if (!mirrors[lastMirror].reflect(ray, rayflection)) {
+    cout << "Refection failed, ray doesn't intersect mirror on intersection"
+            "point" << endl;
+    //exit(4);
   }
+
   delete[] points;
 }
 
@@ -230,7 +232,7 @@ void reflectRayOld(const int mirrorCount, const Segment mirrors[],
   // Only wall version, walls are always 0 to 3. We will hit a wall with t > 0.
   static int lastMirror = -1;
   int i;
-  Segment::Point poi;
+  Segment::Point poi{};
   bool found = false;
 #ifdef _DEBUG
   drawRay(ray, GREEN);
@@ -265,7 +267,7 @@ void reflectRayOld(const int mirrorCount, const Segment mirrors[],
 
 void randomInit(Segment &ray, int &mirrorCount, Segment *&mirrors) {
   // init rand
-  srand(time(0));
+  srand((unsigned int) time(0));
 
   // create ray with length >= 1
   do {
