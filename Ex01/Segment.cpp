@@ -325,7 +325,7 @@ bool Segment::reflect(const Segment &inRay, Segment &outRay,
   return true;
 }
 
-Segment::Segment(const std::string str) {
+Segment::Segment(const std::string &str) {
   std::stringstream(str) >> startPoint.x >> std::ws >> startPoint.y >> std::ws
                          >> endPoint.x >> std::ws >> endPoint.y;
 }

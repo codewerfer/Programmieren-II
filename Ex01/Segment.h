@@ -202,7 +202,7 @@ public:
    * Parses string "x0 y0 x1 y1" to a Segment
    * @param str input string of form "x0 y0 x1 y1"
    */
-  explicit Segment(std::string str);
+  explicit Segment(const std::string &str);
 
   /**
    * returns the segment as vector
