@@ -19,21 +19,28 @@
 #pragma once
 
 #include <iostream>
-#include <cstdlib>
-#include <cmath>
+//#include <cstdlib>
+//#include <cmath>
 
 #include <fstream>
-#include <string>
-#include <algorithm>
+//#include <string>
+//#include <algorithm>
 
 #ifdef SLOWDOWN
 #include <chrono>
 #include <thread>
 #endif
 
+// windows specific
 #ifdef _WIN32
 
 #include <ctime>
+
+#else // linux specific, maybe also macOS, can't check that
+
+#ifndef NDEBUG
+#define _DEBUG
+#endif
 
 #endif
 
