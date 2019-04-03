@@ -23,16 +23,22 @@
  *           No difference on input.txt.
  *
  * CG_ALGO2: use of inverseSqrt
+ *           No difference in input.txt with 2 iterations
  * ATTENTION: Do the fact, that this algorithm uses an approximation of
  *            1/sqrt(x*x+y*y), the result differs a little bit - enough that the
- *            input.txt example gets another end if 2nd iteration is comment out
+ *            input.txt example gets another end if 2nd iteration in
+ *            invsqrtQuake is commented out
  */
 #define CG_ALGO1
 #define CG_ALGO2
 
 #include <sstream>
+
+#ifndef _WIN32
+
 #include <cmath>
 
+#endif
 /**
  * Segment class
  * represents a Segment as a line from a start-point to an endpoint
