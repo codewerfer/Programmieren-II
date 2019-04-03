@@ -39,6 +39,7 @@
 #include <cmath>
 
 #endif
+
 /**
  * Segment class
  * represents a Segment as a line from a start-point to an endpoint

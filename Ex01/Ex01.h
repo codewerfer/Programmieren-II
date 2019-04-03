@@ -21,10 +21,7 @@
 #include <iostream>
 //#include <cstdlib>
 //#include <cmath>
-
 #include <fstream>
-//#include <string>
-//#include <algorithm>
 
 #ifdef SLOWDOWN
 #include <chrono>
@@ -34,6 +31,7 @@
 // windows specific
 #ifdef _WIN32
 
+#include <algorithm>
 #include <ctime>
 
 #else // linux specific, maybe also macOS, can't check that
