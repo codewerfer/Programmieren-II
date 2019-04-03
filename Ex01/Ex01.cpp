@@ -152,7 +152,7 @@ void drawRay(const Segment &ray, unsigned int color)
 #endif
   }
 
-  if ((int) r % D != 0) { // final step if missing
+  if (((int) r % D) != 0) { // final step if missing
     drawLine(lround(start.x), lround(start.y),
              (int) ray.endPoint.x, (int) ray.endPoint.y, color);
 }
