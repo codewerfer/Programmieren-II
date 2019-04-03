@@ -9,7 +9,6 @@
 // (c) ID Software Inc., 1999-2005
 // ----------------------------------------------------------
 
-#include <iostream>
 #include "Segment.h"
 
 #ifdef CG_ALGO2
@@ -135,7 +134,7 @@ bool Segment::intersectVec(const Segment &other, Segment::Point &iPoint) const {
   // check if points of other lie left and right of this segment
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
-  if (signbit(p0) == signbit(p1)
+  if (std::signbit(p0) == std::signbit(p1)
       && abs(p0) > 0 && abs(p1) > 0) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
@@ -184,7 +183,7 @@ bool Segment::intersectVecOld(const Segment &other,
   // check if points of other lie left and right of this segment
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
-  if (signbit(p0) == signbit(p1)
+  if (std::signbit(p0) == std::signbit(p1)
       && abs(p0) > TOL && abs(p1) > TOL) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
@@ -199,7 +198,7 @@ bool Segment::intersectVecOld(const Segment &other,
   );
 
   // get Wall in vec direction, otherwise, it would take the first one
-  if (det_inverse == NAN || signbit(det_inverse)) {
+  if (det_inverse == NAN || std::signbit(det_inverse)) {
     return false;
   }
 

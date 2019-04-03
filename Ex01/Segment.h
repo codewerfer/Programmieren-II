@@ -31,6 +31,7 @@
 #define CG_ALGO2
 
 #include <sstream>
+#include <cmath>
 
 /**
  * Segment class
