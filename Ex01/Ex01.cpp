@@ -124,7 +124,8 @@ void drawMirrors(const int mirrorCount, const Segment mirrors[]) {
   }
 }
 
-void drawRay(const Segment &ray, unsigned int color) {
+void drawRay(const Segment &ray, unsigned int color)
+{
   // from the midpoint algorithm (Pittway 1967, van Aken and Novak 1985) we know
   // that a line from (x0, y0) to (x1, y1) has max(|x1-x0|,|y1-y0|) pixels on a
   // raster image. Because the specification of this Exercise says we should
@@ -133,7 +134,7 @@ void drawRay(const Segment &ray, unsigned int color) {
   // algorithm line, down to single dot size.
 
   Segment::Point vec = ray.vec();
-  const int r = max(abs((int) vec.x), abs((int) vec.y));
+  const double r = max(abs(vec.x), abs(vec.y));
   vec /= r; // per pixel vector
 
   int steps = r / D;
@@ -151,9 +152,10 @@ void drawRay(const Segment &ray, unsigned int color) {
 #endif
   }
 
-  if (r % D != 0) // final step if missing
+  if ((int) r % D != 0) { // final step if missing
     drawLine(lround(start.x), lround(start.y),
              (int) ray.endPoint.x, (int) ray.endPoint.y, color);
+}
 
   // draw dot
   fillEllipse((int) ray.endPoint.x - R / 2, (int) ray.endPoint.y - R / 2,
