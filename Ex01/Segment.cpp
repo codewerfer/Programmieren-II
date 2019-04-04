@@ -135,7 +135,9 @@ bool Segment::intersectVec(const Segment &other, Segment::Point &iPoint) const {
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
   if (std::signbit(p0) == std::signbit(p1)
-      && std::abs(p0) > 0 && std::abs(p1) > 0) {
+      //&& std::abs(p0) > 0 && std::abs(p1) > 0
+      // 0. * -1. := -0; therefore, -0 and 0 are different.
+      ) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
     // this points. Do the fact, that even a little miss like the defined
