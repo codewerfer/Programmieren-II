@@ -135,7 +135,7 @@ bool Segment::intersectVec(const Segment &other, Segment::Point &iPoint) const {
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
   if (std::signbit(p0) == std::signbit(p1)
-      && abs(p0) > 0 && abs(p1) > 0) {
+      && std::abs(p0) > 0 && std::abs(p1) > 0) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
     // this points. Do the fact, that even a little miss like the defined
@@ -184,7 +184,7 @@ bool Segment::intersectVecOld(const Segment &other,
   double p0 = distanceFast(other.startPoint);
   double p1 = distanceFast(other.endPoint);
   if (std::signbit(p0) == std::signbit(p1)
-      && abs(p0) > TOL && abs(p1) > TOL) {
+      && std::abs(p0) > TOL && std::abs(p1) > TOL) {
     // we definitely do not hit a Segment if startPoint and endPoint of it lie
     // both on the same side of our vector. Special case is if we hit one of
     // this points. We can ignore the division by the normal.
@@ -265,7 +265,7 @@ Segment::Point Segment::Point::operator-(const Segment::Point &other) const {
 }
 
 bool Segment::Point::operator==(const Segment::Point &other) const {
-  return (abs(other.x - x) < TOL) && (abs(other.y - y) < TOL);
+  return (std::abs(other.x - x) < TOL) && (std::abs(other.y - y) < TOL);
 }
 
 bool Segment::Point::operator!=(const Segment::Point &other) const {
