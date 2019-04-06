@@ -11,4 +11,3 @@ set(BUILD_SHARED_LIBS OFF)
 add_subdirectory ("Drawing")
 add_subdirectory ("DrawingTest")
 add_subdirectory ("Ex01")
-

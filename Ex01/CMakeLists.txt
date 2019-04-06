@@ -1,12 +1,9 @@
-﻿# CMakeList.txt: CMake-Projekt für "Ex01". Schließen Sie die Quelle ein, und definieren Sie
-# projektspezifische Logik hier.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
-# Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
+project("Ex01" CXX)
+
 add_library(Segment Segment.cpp)
 add_executable(Ex01 Ex01.cpp)
 
+add_dependencies(Ex01 Drawing Segment)
 target_link_libraries(Ex01 Segment Drawing)
-
-# TODO: Fügen Sie bei Bedarf Tests hinzu, und installieren Sie Ziele.
