@@ -1,13 +1,19 @@
-﻿# CMakeList.txt: CMake-Projektdatei der obersten Ebene. Führen Sie hier die globale Konfiguration aus,
-# und schließen Sie Unterprojekte ein.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 project ("ProgrammierenII" CXX)
 
 set(BUILD_SHARED_LIBS OFF)
-# Schließen Sie Unterprojekte ein.
+if(NOT BUILD_SHARED_LIBS)
+    message("Turn on gtest_force_shared_crt")
+    set(gtest_force_shared_crt ON CACHE BOOL "gtest_force_shared_crt")
+endif()
+
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+#gtest
+add_subdirectory("gtest")
 
 add_subdirectory ("Drawing")
 add_subdirectory ("DrawingTest")
 add_subdirectory ("Ex01")
+add_subdirectory ("Ex02")
