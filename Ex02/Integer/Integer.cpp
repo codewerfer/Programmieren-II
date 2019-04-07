@@ -12,32 +12,32 @@ Integer::~Integer()
 {
 }
 
-Integer Integer::operator-()
+Integer Integer::operator-() const
 {
 	return Integer();
 }
 
-Integer Integer::operator+(const Integer& i)
+Integer Integer::operator+(const Integer& i) const
 {
 	return Integer();
 }
 
-Integer Integer::operator-(const Integer& i)
+Integer Integer::operator-(const Integer& i) const
 {
 	return Integer();
 }
 
-Integer Integer::operator*(const Integer& i)
+Integer Integer::operator*(const Integer& i) const
 {
 	return Integer();
 }
 
-bool Integer::operator==(const Integer& i)
+bool Integer::operator==(const Integer& i) const
 {
 	return false;
 }
 
-bool Integer::operator<=(const Integer& i)
+bool Integer::operator<=(const Integer& i) const
 {
 	return false;
 }

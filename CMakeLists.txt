@@ -1,19 +1,22 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.8)
 
-project ("ProgrammierenII" CXX)
+project("ProgrammierenII" CXX)
 
 set(BUILD_SHARED_LIBS OFF)
-if(NOT BUILD_SHARED_LIBS)
+if (NOT BUILD_SHARED_LIBS)
     message("Turn on gtest_force_shared_crt")
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-endif()
+else ()
+    message("Turn off gtest_force_shared_crt")
+    set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
+endif ()
 
-#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 
 #gtest
 add_subdirectory("gtest")
 
-add_subdirectory ("Drawing")
-add_subdirectory ("DrawingTest")
-add_subdirectory ("Ex01")
-add_subdirectory ("Ex02")
+add_subdirectory("Drawing")
+add_subdirectory("DrawingTest")
+add_subdirectory("Ex01")
+add_subdirectory("Ex02")

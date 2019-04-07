@@ -19,12 +19,12 @@ public:
 	friend ostream& operator<<(ostream& os, const Integer& i);
 
 	// negation, sum, difference, product of this number and <i>
-	Integer operator-();
-	Integer operator+(const Integer& i);
-	Integer operator-(const Integer& i);
-	Integer operator*(const Integer& i);
+	Integer operator-() const;
+	Integer operator+(const Integer& i) const;
+	Integer operator-(const Integer& i) const;
+	Integer operator*(const Integer& i) const;
 
 	// equality and less-than-equality of this number and <i>
-	bool operator==(const Integer& i);
-	bool operator<=(const Integer& i);
+	bool operator==(const Integer& i) const;
+	bool operator<=(const Integer& i) const;
 };
