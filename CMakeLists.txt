@@ -5,7 +5,7 @@ project ("ProgrammierenII" CXX)
 set(BUILD_SHARED_LIBS OFF)
 if(NOT BUILD_SHARED_LIBS)
     message("Turn on gtest_force_shared_crt")
-    set(gtest_force_shared_crt ON CACHE BOOL "gtest_force_shared_crt")
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif()
 
 #set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
