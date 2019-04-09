@@ -54,13 +54,20 @@ TEST(Constructor1, intMax) {
 
 TEST(Constructor1, intMin) {
   Integer i0 = Integer(INT32_MIN);
-  Integer i1 = Integer(INT32_MIN);
 
-  ASSERT_EQ(i0, i1);
   stringstream s0;
   s0 << i0;
   string s1 = to_string(INT32_MIN);
   ASSERT_STREQ(s0.str().c_str(), s1.c_str());
+}
+
+TEST(Constructor1, intMinp1) {
+	Integer i0 = Integer(INT32_MIN+1);
+
+	stringstream s0;
+	s0 << i0;
+	string s1 = to_string(INT32_MIN+1);
+	ASSERT_STREQ(s0.str().c_str(), s1.c_str());
 }
 
 TEST(Constructor2, Zero) {
@@ -273,4 +280,47 @@ TEST(OperatorMul, Mul0) {
 	int n = 10;
 	Integer i2 = Integer(n, d);
 
+	ASSERT_EQ(i1 * i0, i0);
+	ASSERT_EQ(i2 * i0, i0);
+}
+
+TEST(OperatorMul, Mul1) {
+	Integer i0 = Integer(1);
+	Integer i1 = Integer(42);
+	char d[] = { 99, 99, 99, 99, 99, 99, 99, 99, 99, 99 };
+	int n = 10;
+	Integer i2 = Integer(n, d);
+
+	ASSERT_EQ(i1 * i0, i1);
+	ASSERT_EQ(i2 * i0, i2);
+}
+
+TEST(OperatorMul, Mul2) {
+	Integer i0 = Integer(2);
+	Integer i1 = Integer(42);
+	char d[] = { 99, 99, 99, 99, 99, 99, 99, 99, 99, 99 };
+	int n = 10;
+	Integer i2 = Integer(n, d);
+
+	ASSERT_EQ(i1 * i0, i1 + i1);
+	ASSERT_EQ(i2 * i0, i2 + i2);
+}
+
+TEST(OperatorEqual) {
+	Integer i0(0);
+	Integer i1(1);
+	
+	ASSERT_TRUE(i0 == i0);
+	ASSERT_TRUE(i1 == i1);
+	ASSERT_FALSE(i0 == i1);
+}
+
+TEST(OperatorLessEqual) {
+	Integer i0(0);
+	Integer i1(1);
+
+	ASSERT_TRUE(i0 <= i0);
+	ASSERT_TRUE(i1 <= i1);
+	ASSERT_TRUE(i0 <= i1);
+	ASSERT_FALSE(i1 <= i0);
 }

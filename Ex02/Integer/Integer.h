@@ -1,10 +1,27 @@
 #include <ostream>
 
+#define VECTOR
+
+#ifdef VECTOR
+#include <vector>
+#endif // VECTOR
+
+
 #pragma once
 
 using namespace std;
 
 class Integer {
+	bool negativ = false;
+	int n = 0;
+#ifdef VECTOR
+	vector<char> d;
+#else
+	char* d = NULL;
+#endif // VECTOR
+
+	Integer(bool checked, int n, char* d);
+
 public:
 	// integer number representing value <i>, default 0
 	Integer(int i = 0);
