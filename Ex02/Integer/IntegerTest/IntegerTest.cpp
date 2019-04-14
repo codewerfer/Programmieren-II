@@ -406,7 +406,35 @@ TEST(OperatorMul, Mul5) {
   ASSERT_EQ(i0 * -i0, i1);
 }
 
+TEST(OperatorMul, Mul6) {
+  Integer i0 = Integer(123);
+  Integer i1 = Integer(987);
 
+  Integer exp(121401);
+
+  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i1 * i0, exp);
+}
+
+TEST(OperatorMul, Mul7) {
+  Integer i0 = Integer(123);
+  Integer i1 = Integer(54321);
+
+  Integer exp(6681483);
+
+  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i1 * i0, exp);
+}
+
+TEST(OperatorMul, Mul8) {
+  Integer i0 = Integer(12345);
+  Integer i1 = Integer(54321);
+
+  Integer exp(670592745);
+
+  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i1 * i0, exp);
+}
 
 TEST(OperatorEqual, ZeroZeroe) {
   Integer i0(0);

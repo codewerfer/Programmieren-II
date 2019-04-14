@@ -112,7 +112,7 @@ Integer Integer::operator+(const Integer &i) const {
 #ifdef VECTOR
     if (this->d.size() < i.d.size())
 #else
-    if (n < i.n)
+      if (n < i.n)
 #endif
     {
       return add(i, *this);
@@ -128,22 +128,35 @@ Integer Integer::operator-(const Integer &i) const {
 
 Integer Integer::operator*(const Integer &i) const {
   Integer r;
-  int maxN =
+  r.negativ = (negativ ^ i.negativ);
+  int N =
 #ifdef VECTOR
-        d.size() + i.d.size();
-  r.d.reserve(maxN);
+          d.size() + i.d.size() - 1;
+  r.d.reserve(N + 1);
 #else
-        n + i.n;
-  d = new char[maxN];
+  n + i.n - 1;
+d = new char[N + 1];
 #endif
-  /*for (int j = 0; j <; ++j) {
-    for (int k = 0; k < ; ++k) {
-      
+  // 0 : (0,0)
+  // 1 : (1,0) + (0,1)
+  // 2 : (2,0) + (1,1) + (0,2)
+  // n : (n,0) + ... + (0,n)
+  // n, m:
+  int sum = 0;
+  div_t result;
+  for (int j = 0; j < N; ++j) {
+    for (int k = 0; k <= j; ++k) {
+      sum += abs((j - k) > d.size()-1 ? 0 : d[j - k]) * abs(k > i.d.size()-1 ? 0 : i.d[k]);
     }
-  }*/
+    result = div(sum, 100);
+    r.d.push_back(r.negativ ? -result.rem : result.rem);
+    sum = result.quot;
+  }
+  r.d.push_back(r.negativ ? -sum : sum);
 #ifdef VECTOR
 #else
 #endif
+  r.removeZeros();
   return r;
 }
 
@@ -211,7 +224,7 @@ ostream &operator<<(ostream &os, const Integer &i) {
 #ifdef VECTOR
           i.d.size();
 #else
-          i.n;
+  i.n;
 #endif
   if (n == 0) {
     return os << "0";
