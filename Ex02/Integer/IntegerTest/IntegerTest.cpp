@@ -367,6 +367,30 @@ TEST(OperatorMul, Mul2) {
 	ASSERT_EQ(i2 * i0, i2 + i2);
 }
 
+TEST(OperatorMul, Mul3) {
+  Integer i0 = Integer(99);
+  Integer i1 = Integer(9801);
+
+  ASSERT_EQ(i0 * i0, i1);
+}
+
+TEST(OperatorMul, Mul4) {
+  Integer i0 = Integer(-99);
+  Integer i1 = Integer(9801);
+
+  ASSERT_EQ(i0 * i0, i1);
+}
+
+TEST(OperatorMul, Mul5) {
+  Integer i0 = Integer(99);
+  Integer i1 = Integer(-9801);
+
+  ASSERT_EQ(-i0 * i0, i1);
+  ASSERT_EQ(i0 * -i0, i1);
+}
+
+
+
 TEST(OperatorEqual, ZeroZeroe) {
   Integer i0(0);
   Integer i1(0);
@@ -549,6 +573,54 @@ TEST(OperatorLessEqual, p42p43) {
   ASSERT_TRUE(i1 <= i1);
   ASSERT_TRUE(i0 <= i1);
   ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, n43p42) {
+  Integer i0(-4143);
+  Integer i1(42);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, n42p43) {
+  Integer i0(-42);
+  Integer i1(4143);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, n12345p54321) {
+  Integer i0(-12345);
+  Integer i1(54321);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+  EXPECT_TRUE(Integer(12345) <= Integer(54321));
+  ASSERT_TRUE(-i0 <= i1);
+  EXPECT_FALSE(Integer(-12345) <= Integer(-54321));
+  ASSERT_FALSE(i0 <= -i1);
+}
+
+TEST(OperatorLessEqual, p12345n54321) {
+  Integer i0(-54321);
+  Integer i1(12345);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+  EXPECT_FALSE(Integer(54321) <= Integer(12345));
+  ASSERT_FALSE(-i0 <= i1);
+  EXPECT_TRUE(Integer(-54321) <= Integer(-12345));
+  ASSERT_TRUE(i0 <= -i1);
 }
 
 TEST(OperatorLessEqual, Smallp1n3141592) {

@@ -110,10 +110,11 @@ Integer Integer::operator-() const {
 Integer Integer::operator+(const Integer &i) const {
   if (this->negativ != i.negativ) {
 #ifdef VECTOR
-    if (this->d.size() < i.d.size()) {
+    if (this->d.size() < i.d.size())
 #else
-    if (this->n < i.n) {
+    if (n < i.n)
 #endif
+    {
       return add(i, *this);
     } else if (negativ ? -*this <= i : *this <= -i)
       return add(i, *this);
@@ -181,6 +182,8 @@ bool Integer::operator<=(const Integer &i) const {
   for (int j = n - 1; j >= 0; --j) {
     if (d[j] > i.d[j])
       return false;
+    else if (d[j] < i.d[j])
+      return true;
   }
   return true;
 #endif
@@ -247,7 +250,7 @@ Integer Integer::add(const Integer &i1, const Integer &i2) {
 #ifdef VECTOR
   r.d.reserve(maxSize + 1);
 #else
-  r.d = new char[maxSize + 2];
+  r.d = new char[maxSize + 1];
 #endif
 
   for (int i = 0; i < maxSize; ++i) {
