@@ -16,7 +16,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 #gtest
 add_subdirectory("gtest")
 
-add_subdirectory("Drawing")
-add_subdirectory("DrawingTest")
-add_subdirectory("Ex01")
+#add_subdirectory("Drawing")
+#add_subdirectory("DrawingTest")
+#add_subdirectory("Ex01")
 add_subdirectory("Ex02")

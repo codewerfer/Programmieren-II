@@ -131,6 +131,19 @@ TEST(Constructor2, big) {
 
 TEST(OperatorNegativ, toNegativ42) {
   int exp = -42;
+  Integer e(exp);
+  Integer i = -e;
+
+  ASSERT_EQ(i, Integer(-exp));
+  ASSERT_FALSE(i == e);
+  stringstream s;
+  s << i;
+
+  ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
+}
+
+TEST(OperatorNegativ, toNegativ0) {
+  int exp = 0;
   Integer i = -Integer(-exp);
 
   ASSERT_EQ(i, Integer(exp));
@@ -142,35 +155,43 @@ TEST(OperatorNegativ, toNegativ42) {
 
 TEST(OperatorNegativ, toNegativ4258976) {
   int exp = -4258976;
-  Integer i = -Integer(-exp);
+  Integer e(exp);
+  Integer i = -e;
 
-  ASSERT_EQ(i, Integer(exp));
+  ASSERT_EQ(i, Integer(-exp));
   stringstream s;
   s << i;
 
-  ASSERT_STREQ(s.str().c_str(), to_string(exp).c_str());
+  ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
+
+  ASSERT_FALSE(i == e);
 }
 
 TEST(OperatorNegativ, toPositiv21) {
   int exp = 21;
-  Integer i = -Integer(-exp);
+  Integer e(exp);
+  Integer i = -e;
 
-  ASSERT_EQ(i, Integer(exp));
+  ASSERT_EQ(i, Integer(-exp));
   stringstream s;
   s << i;
 
-  ASSERT_STREQ(s.str().c_str(), to_string(exp).c_str());
+  ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
+  ASSERT_FALSE(i == e);
 }
 
 TEST(OperatorNegativ, toPositiv4258976) {
   int exp = 4258976;
-  Integer i = -Integer(-exp);
+  Integer e(exp);
+  Integer i = -e;
 
-  ASSERT_EQ(i, Integer(exp));
+  ASSERT_EQ(i, Integer(-exp));
   stringstream s;
   s << i;
 
-  ASSERT_STREQ(s.str().c_str(), to_string(exp).c_str());
+  ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
+
+  ASSERT_FALSE(i == e);
 }
 
 TEST(OperatorPlus, p12345p54321) {
@@ -212,7 +233,7 @@ TEST(OperatorPlus, p12345m54321) {
   ASSERT_EQ(i3, Integer(exp));
 }
 
-TEST(OperarorPlus, Overflow) {
+TEST(OperatorPlus, Overflow) {
   Integer i0 = Integer(99);
   Integer i1 = Integer(1);
 
@@ -221,7 +242,7 @@ TEST(OperarorPlus, Overflow) {
   ASSERT_EQ(i0 + i1, exp);
 }
 
-TEST(OperarorPlus, OverflowBig) {
+TEST(OperatorPlus, OverflowBig) {
   char d[] = {99, 99, 99, 99, 99, 99, 99, 99, 99, 99};
   int n = 10;
   Integer i0 = Integer(n, d);
@@ -234,7 +255,7 @@ TEST(OperarorPlus, OverflowBig) {
   ASSERT_EQ(i0 + i1, exp);
 }
 
-TEST(OperarorPlus, Underflow) {
+TEST(OperatorPlus, Underflow) {
   Integer i0 = Integer(-100);
   Integer i1 = Integer(1);
 
@@ -306,7 +327,14 @@ TEST(OperatorMul, Mul2) {
 	ASSERT_EQ(i2 * i0, i2 + i2);
 }
 
-TEST(OperatorEqual) {
+TEST(OperatorEqual, ZeroZeroe) {
+  Integer i0(0);
+  Integer i1(0);
+
+  ASSERT_TRUE(i0 == i1);
+}
+
+TEST(OperatorEqual, ZeroOne) {
 	Integer i0(0);
 	Integer i1(1);
 	
@@ -315,7 +343,58 @@ TEST(OperatorEqual) {
 	ASSERT_FALSE(i0 == i1);
 }
 
-TEST(OperatorLessEqual) {
+TEST(OperatorEqual, ZeromOne) {
+  Integer i0(0);
+  Integer i1(-1);
+
+  ASSERT_TRUE(i0 == i0);
+  ASSERT_TRUE(i1 == i1);
+  ASSERT_FALSE(i0 == i1);
+  ASSERT_FALSE(i1 == i0);
+}
+
+TEST(OperatorEqual, OneOne) {
+  Integer i0(1);
+  Integer i1(1);
+
+  ASSERT_TRUE(i0 == i1);
+}
+
+TEST(OperatorEqual, mOneOne) {
+  Integer i0(-1);
+  Integer i1(-1);
+
+  ASSERT_TRUE(i0 == i1);
+}
+
+TEST(OperatorEqual, ZeroBig) {
+  Integer i0(0);
+  Integer i1(INT32_MAX);
+
+  ASSERT_TRUE(i0 == i0);
+  ASSERT_TRUE(i1 == i1);
+  ASSERT_FALSE(i0 == i1);
+}
+
+TEST(OperatorEqual, ZeroSmall) {
+  Integer i0(0);
+  Integer i1(INT32_MIN);
+
+  ASSERT_TRUE(i0 == i0);
+  ASSERT_TRUE(i1 == i1);
+  ASSERT_FALSE(i0 == i1);
+}
+
+TEST(OperatorEqual, np) {
+  Integer i0(-4242);
+  Integer i1(+4242);
+
+  ASSERT_TRUE(i0 == i0);
+  ASSERT_TRUE(i1 == i1);
+  ASSERT_FALSE(i0 == i1);
+}
+
+TEST(OperatorLessEqual, ZeroOne) {
 	Integer i0(0);
 	Integer i1(1);
 
@@ -323,4 +402,190 @@ TEST(OperatorLessEqual) {
 	ASSERT_TRUE(i1 <= i1);
 	ASSERT_TRUE(i0 <= i1);
 	ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, OneOne) {
+  Integer i0(1);
+  Integer i1(1);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+}
+
+TEST(OperatorLessEqual, OneTwo) {
+  Integer i0(1);
+  Integer i1(2);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, mOnemOne) {
+  Integer i0(-1);
+  Integer i1(-1);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+}
+
+TEST(OperatorLessEqual, ZeroZero) {
+  Integer i0(0);
+  Integer i1(0);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+}
+
+TEST(OperatorLessEqual, ZeroBig) {
+  Integer i0(0);
+  Integer i1(INT32_MAX);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, SmallZero) {
+  Integer i0(INT32_MIN);
+  Integer i1(0);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, Smallp1Zero) {
+  Integer i0(INT32_MIN+1);
+  Integer i1(0);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, m42Zero) {
+  Integer i0(-42);
+  Integer i1(0);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, Smalln3141592) {
+  Integer i0(INT32_MIN);
+  Integer i1(-3141592);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, n43n42) {
+  Integer i0(-4143);
+  Integer i1(-42);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, p42p43) {
+  Integer i0(42);
+  Integer i1(4143);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, Smallp1n3141592) {
+  Integer i0(INT32_MIN+1);
+  Integer i1(-3141592);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, m3141592Big) {
+  Integer i0(-3141592);
+  Integer i1(INT32_MAX);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, p3141592Bigm1) {
+  Integer i0(3141592);
+  Integer i1(INT32_MAX-1);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, p3141592Big) {
+  Integer i0(3141592);
+  Integer i1(INT32_MAX);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+
+
+TEST(OperatorLessEqual, n3141592p42) {
+  Integer i0(-3141592);
+  Integer i1(42);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(OperatorLessEqual, n42p3141592) {
+  Integer i0(-42);
+  Integer i1(3141592);
+
+  ASSERT_TRUE(i0 <= i0);
+  ASSERT_TRUE(i1 <= i1);
+  ASSERT_TRUE(i0 <= i1);
+  ASSERT_FALSE(i1 <= i0);
+}
+
+TEST(Copy, Constructor) {
+  Integer i0(42);
+  Integer i1 = i0;
+  ASSERT_TRUE(i0 == i1);
+  i0 = i0 + Integer(1);
+  ASSERT_FALSE(i0 == i1);
+}
+
+TEST(Copy, Assigment) {
+  Integer i0(42);
+  Integer i1;
+  i1 = i0;
+  ASSERT_TRUE(i0 == i1);
+  i0 = i0 + Integer(1);
+  ASSERT_FALSE(i0 == i1);
 }

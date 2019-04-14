@@ -5,12 +5,20 @@
 
 int main()
 {
-	Integer i0, i1, i2;
-	i0 = Integer(0);
-	i1 = Integer(1);
-	i2 = Integer(2);
+	Integer i0 = Integer(0);
+	Integer i1 = Integer(1010101);
+	Integer i2 = Integer(INT32_MIN);
+
+  int exp = 4258976;
+  Integer e(exp);
+  Integer i = -e;
+
+	//Integer i0(0);
+	//Integer i1(2010102);
+	//Integer i2(INT32_MAX);
 	
 	cout << i0 << endl << i1 << endl << i2 << endl;
+	cout << i << endl << e << endl;
 
 	return 0;
 	/*

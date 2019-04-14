@@ -1,9 +1,14 @@
 #include <ostream>
+#include <cmath>
+#include <iostream>
+#include <sstream>
 
-#define VECTOR
+// use a std::vector for d, comment out for char* d
+//#define VECTOR
 
 #ifdef VECTOR
 #include <vector>
+#include <algorithm>
 #endif // VECTOR
 
 
@@ -13,15 +18,19 @@ using namespace std;
 
 class Integer {
 	bool negativ = false;
-	int n = 0;
 #ifdef VECTOR
 	vector<char> d;
 #else
+	int n = 0;
 	char* d = NULL;
 #endif // VECTOR
 
-	Integer(bool checked, int n, char* d);
+public:
+  // copy constructor
+	Integer(const Integer& i);
 
+  // copy assigment operator
+  Integer& operator=(const Integer& i);
 public:
 	// integer number representing value <i>, default 0
 	Integer(int i = 0);
@@ -44,4 +53,7 @@ public:
 	// equality and less-than-equality of this number and <i>
 	bool operator==(const Integer& i) const;
 	bool operator<=(const Integer& i) const;
+
+private:
+  void deopt(int &i, bool &int_min);
 };
