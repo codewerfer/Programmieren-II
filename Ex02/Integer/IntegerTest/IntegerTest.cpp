@@ -304,6 +304,23 @@ TEST(OperatorPlus, Underflow3) {
   ASSERT_EQ(i0 + i1, exp);
 }
 
+TEST(OperatorPlus, Zero1) {
+  Integer i0 = Integer(9999);
+  Integer i1 = Integer(-9999);
+
+  Integer exp = Integer(0);
+
+  ASSERT_EQ(i0 + i1, exp);
+}
+
+TEST(OperatorPlus, Zero2) {
+  Integer i0 = Integer(9999);
+  Integer i1 = Integer(-9999);
+  Integer i2 = Integer(1);
+
+  ASSERT_EQ((i0 + i1) + i2, i2);
+}
+
 TEST(OperatorMinus, SimplePos) {
 	Integer i0 = Integer(12345);
 	Integer i1 = Integer(1);

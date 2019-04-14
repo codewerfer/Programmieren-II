@@ -127,7 +127,24 @@ Integer Integer::operator-(const Integer &i) const {
 }
 
 Integer Integer::operator*(const Integer &i) const {
-  return Integer();
+  Integer r;
+  int maxN =
+#ifdef VECTOR
+        d.size() + i.d.size();
+  r.d.reserve(maxN);
+#else
+        n + i.n;
+  d = new char[maxN];
+#endif
+  /*for (int j = 0; j <; ++j) {
+    for (int k = 0; k < ; ++k) {
+      
+    }
+  }*/
+#ifdef VECTOR
+#else
+#endif
+  return r;
 }
 
 bool Integer::operator==(const Integer &i) const {
@@ -295,11 +312,11 @@ Integer Integer::add(const Integer &i1, const Integer &i2) {
 
 void Integer::removeZeros() {
 #ifdef VECTOR
-  while (d.back() == 0) {
+  while (d.back() == 0 && d.size() > 0) {
     d.pop_back();
   }
 #else
-  while (d[n-1] == 0) {
+  while (d[n-1] == 0 && n > 0) {
     n--;
   }
 #endif
