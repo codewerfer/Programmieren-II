@@ -55,7 +55,10 @@ Integer::Integer(int i) {
     d[0]--;
 }
 
-void inline __attribute__((optimize("O0")))
+void inline
+#ifdef __GNUC__
+__attribute__((optimize("O0")))
+#endif
 Integer::deopt(int &i, bool &int_min) {
   if (i < 0) {
     negativ = true;
@@ -105,7 +108,17 @@ Integer Integer::operator-() const {
 }
 
 Integer Integer::operator+(const Integer &i) const {
-  return Integer();
+  if (this->negativ != i.negativ) {
+#ifdef VECTOR
+    if (this->d.size() < i.d.size()) {
+#else
+    if (this->n < i.n) {
+#endif
+      return add(i, *this);
+    } else if (negativ ? -*this <= i : *this <= -i)
+      return add(i, *this);
+  }
+  return add(*this, i);
 }
 
 Integer Integer::operator-(const Integer &i) const {
@@ -215,4 +228,76 @@ Integer &Integer::operator=(const Integer &i) {
   }
 #endif
   return *this;
+}
+
+//
+Integer Integer::add(const Integer &i1, const Integer &i2) {
+  Integer r;
+  short sum = 0;
+  div_t result;
+  r.negativ = i1.negativ;
+#ifdef VECTOR
+  int s1 = i1.d.size();
+  int s2 = i2.d.size();
+#else
+  int s1 = i1.n;
+  int s2 = i2.n;
+#endif
+  int maxSize = max(s1, s2);
+#ifdef VECTOR
+  r.d.reserve(maxSize + 1);
+#else
+  r.d = new char[maxSize + 2];
+#endif
+
+  for (int i = 0; i < maxSize; ++i) {
+    if (i < s1)
+      sum += i1.d[i];
+    if (i < s2)
+      sum += i2.d[i];
+
+    bool underflow = false;
+    if (i1.negativ ? sum > 0 : sum < 0) {
+      sum += i1.negativ ? -100 : 100;
+      underflow = true;
+    }
+    result = div(r.negativ ? -sum : sum, 100);
+    if (underflow) {
+      result.quot += -1;//i1.negativ ? 1 : -1;
+    }
+
+#ifdef VECTOR
+    r.d.push_back(r.negativ ? -result.rem : result.rem);
+#else
+    r.d[i] = r.negativ ? -result.rem : result.rem;
+#endif
+    sum = r.negativ ? -result.quot : result.quot;
+  }
+
+#ifdef VECTOR
+  if (sum != 0) {
+    r.d.push_back(sum);
+  }
+#else
+  if (sum != 0) {
+    r.n = maxSize + 1;
+    r.d[maxSize] = sum;
+  } else {
+    r.n = maxSize;
+  }
+#endif
+  r.removeZeros();
+  return r;
+}
+
+void Integer::removeZeros() {
+#ifdef VECTOR
+  while (d.back() == 0) {
+    d.pop_back();
+  }
+#else
+  while (d[n-1] == 0) {
+    n--;
+  }
+#endif
 }

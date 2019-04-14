@@ -207,6 +207,19 @@ TEST(OperatorPlus, p12345p54321) {
   ASSERT_EQ(i3, Integer(exp));
 }
 
+TEST(OperatorPlus, m12345m54321) {
+  int exp = -66666;
+  Integer i0 = Integer(-12345);
+  Integer i1 = Integer(-54321);
+
+  Integer i2 = i0 + i1;
+  Integer i3 = i1 + i0;
+
+  ASSERT_EQ(i2, i3);
+  ASSERT_EQ(i2, Integer(exp));
+  ASSERT_EQ(i3, Integer(exp));
+}
+
 TEST(OperatorPlus, m12345p54321) {
   int exp = 41976;
   Integer i0 = Integer(-12345);
@@ -233,11 +246,20 @@ TEST(OperatorPlus, p12345m54321) {
   ASSERT_EQ(i3, Integer(exp));
 }
 
-TEST(OperatorPlus, Overflow) {
-  Integer i0 = Integer(99);
+TEST(OperatorPlus, pOverflow) {
+  Integer i0 = Integer(9999);
   Integer i1 = Integer(1);
 
-  Integer exp = Integer(100);
+  Integer exp = Integer(10000);
+
+  ASSERT_EQ(i0 + i1, exp);
+}
+
+TEST(OperatorPlus, mOverflow) {
+  Integer i0 = Integer(-9999);
+  Integer i1 = Integer(-1);
+
+  Integer exp = Integer(-10000);
 
   ASSERT_EQ(i0 + i1, exp);
 }
@@ -255,11 +277,29 @@ TEST(OperatorPlus, OverflowBig) {
   ASSERT_EQ(i0 + i1, exp);
 }
 
-TEST(OperatorPlus, Underflow) {
+TEST(OperatorPlus, Underflow1) {
   Integer i0 = Integer(-100);
   Integer i1 = Integer(1);
 
   Integer exp = Integer(-99);
+
+  ASSERT_EQ(i0 + i1, exp);
+}
+
+TEST(OperatorPlus, Underflow2) {
+  Integer i0 = Integer(-10000);
+  Integer i1 = Integer(1);
+
+  Integer exp = Integer(-9999);
+
+  ASSERT_EQ(i0 + i1, exp);
+}
+
+TEST(OperatorPlus, Underflow3) {
+  Integer i0 = Integer(-10000);
+  Integer i1 = Integer(9999);
+
+  Integer exp = Integer(-1);
 
   ASSERT_EQ(i0 + i1, exp);
 }

@@ -4,7 +4,7 @@
 #include <sstream>
 
 // use a std::vector for d, comment out for char* d
-//#define VECTOR
+#define VECTOR
 
 #ifdef VECTOR
 #include <vector>
@@ -22,7 +22,7 @@ class Integer {
 	vector<char> d;
 #else
 	int n = 0;
-	char* d = NULL;
+	char* d = nullptr;
 #endif // VECTOR
 
 public:
@@ -33,7 +33,7 @@ public:
   Integer& operator=(const Integer& i);
 public:
 	// integer number representing value <i>, default 0
-	Integer(int i = 0);
+	explicit Integer(int i = 0);
 
 	// integer number with <n> base-100 digits d[0],...
 	Integer(int n, char* d);
@@ -56,4 +56,6 @@ public:
 
 private:
   void deopt(int &i, bool &int_min);
+  void removeZeros();
+  static Integer add(const Integer &i1, const Integer &i2);
 };
