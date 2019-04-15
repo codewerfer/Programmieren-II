@@ -129,6 +129,12 @@ TEST(Constructor2, big) {
   ASSERT_STREQ(s0.str().c_str(), exp.c_str());
 }
 
+TEST(Constructor2, fail) {
+  char d[] = {0,-1,0,1,0};
+  int n = 5;
+  ASSERT_THROW(Integer(n,d), runtime_error);
+}
+
 TEST(OperatorNegativ, toNegativ42) {
   int exp = -42;
   Integer e(exp);

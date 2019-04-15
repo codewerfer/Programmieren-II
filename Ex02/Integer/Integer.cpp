@@ -1,13 +1,10 @@
 #include "Integer.h"
 
 #ifdef VECTOR
-
 Integer::Integer(const Integer &i) : negativ(i.negativ) {
   d = i.d;
 }
-
 #else
-
 Integer::Integer(const Integer &i) : n(i.n), negativ(i.negativ) {
   if (n > 0) {
     d = new char[n];
@@ -16,7 +13,6 @@ Integer::Integer(const Integer &i) : n(i.n), negativ(i.negativ) {
     }
   }
 }
-
 #endif
 
 Integer::Integer(int i) {
@@ -75,8 +71,16 @@ Integer::Integer(int n, char *d) {
   {
     throw runtime_error("Arguments for Integer(int n, char* d) are invalid.");
   }
+#ifndef VECTOR
+  this->d = new char[n];
+#endif
   for (int i = 0; i < n; ++i) {
+#ifdef VECTOR
     this->d.push_back(d[i]);
+#else
+    this->d[i] = d[i];
+    this->n = n;
+#endif
   }
   this->removeZeros();
 }
@@ -132,7 +136,11 @@ Integer Integer::operator-(const Integer &i) const {
 }
 
 Integer Integer::operator*(const Integer &i) const {
+#ifdef VECTOR
   if (d.size() == 0 || i.d.size() == 0)
+#else
+  if (n == 0 || i.n == 0)
+#endif
     return Integer(0);
   Integer r;
   r.negativ = (negativ ^ i.negativ);
@@ -142,7 +150,7 @@ Integer Integer::operator*(const Integer &i) const {
   r.d.reserve(N + 1);
 #else
           n + i.n - 1;
-  d = new char[N + 1];
+  r.d = new char[N + 1];
 #endif
   // 0 : (0,0)
   // 1 : (1,0) + (0,1)
@@ -153,16 +161,32 @@ Integer Integer::operator*(const Integer &i) const {
   div_t result;
   for (int j = 0; j < N; ++j) {
     for (int k = 0; k <= j; ++k) {
-      sum += abs((j - k) > d.size()-1 ? 0 : d[j - k]) * abs(k > i.d.size()-1 ? 0 : i.d[k]);
+#ifdef VECTOR
+      sum += abs((j - k) > d.size()-1 ? 0 : d[j - k])
+              * abs(k > i.d.size()-1 ? 0 : i.d[k]);
+#else
+      sum += abs((j - k) > n-1 ? 0 : d[j - k])
+             * abs(k > i.n-1 ? 0 : i.d[k]);
+#endif
     }
     result = div(sum, 100);
+#ifdef VECTOR
     r.d.push_back(r.negativ ? -result.rem : result.rem);
+#else
+    r.d[j] = r.negativ ? -result.rem : result.rem;
+#endif
     sum = result.quot;
   }
-  r.d.push_back(r.negativ ? -sum : sum);
+  if(sum > 0) {
 #ifdef VECTOR
+    r.d.push_back(r.negativ ? -sum : sum);
 #else
+    r.d[N] = r.negativ ? -sum : sum;
+    r.n = N + 1;
+  } else {
+    r.n = N;
 #endif
+  }
   r.removeZeros();
   return r;
 }
@@ -231,7 +255,7 @@ ostream &operator<<(ostream &os, const Integer &i) {
 #ifdef VECTOR
           i.d.size();
 #else
-  i.n;
+          i.n;
 #endif
   if (n == 0) {
     return os << "0";
@@ -314,18 +338,16 @@ Integer Integer::add(const Integer &i1, const Integer &i2) {
     sum = r.negativ ? -result.quot : result.quot;
   }
 
+  if (sum != 0) {
 #ifdef VECTOR
-  if (sum != 0) {
     r.d.push_back(sum);
-  }
 #else
-  if (sum != 0) {
     r.n = maxSize + 1;
     r.d[maxSize] = sum;
   } else {
     r.n = maxSize;
-  }
 #endif
+  }
   r.removeZeros();
   return r;
 }
@@ -345,14 +367,12 @@ void Integer::removeZeros() {
 bool Integer::check(const int n, const char d[]) {
   if (n == 0)
     return true;
-  //bool sign;
   for (int i = 0; i < n; ++i) {
     if(d[i] != 0) {
       negativ = d[i] < 0;
       break;
     }
   }
-
   for (int i = 1; i < n; ++i) {
     if (d[i] != 0 && d[i] < 0 != negativ) { return false; }
   }
