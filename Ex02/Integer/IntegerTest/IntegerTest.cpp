@@ -418,7 +418,7 @@ TEST(OperatorMul, Mul6) {
 
   Integer exp(121401);
 
-  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i0 * i1, exp);
   ASSERT_EQ(i1 * i0, exp);
 }
 
@@ -428,7 +428,7 @@ TEST(OperatorMul, Mul7) {
 
   Integer exp(6681483);
 
-  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i0 * i1, exp);
   ASSERT_EQ(i1 * i0, exp);
 }
 
@@ -438,7 +438,7 @@ TEST(OperatorMul, Mul8) {
 
   Integer exp(670592745);
 
-  EXPECT_EQ(i0 * i1, exp);
+  ASSERT_EQ(i0 * i1, exp);
   ASSERT_EQ(i1 * i0, exp);
 }
 
