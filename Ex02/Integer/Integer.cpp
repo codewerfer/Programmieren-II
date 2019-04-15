@@ -71,9 +71,14 @@ Integer::deopt(int &i, bool &int_min) {
 }
 
 Integer::Integer(int n, char *d) {
+  if(!check(n, d))
   {
     throw runtime_error("Arguments for Integer(int n, char* d) are invalid.");
   }
+  for (int i = 0; i < n; ++i) {
+    this->d.push_back(d[i]);
+  }
+  this->removeZeros();
 }
 
 Integer::~Integer() {
@@ -127,6 +132,8 @@ Integer Integer::operator-(const Integer &i) const {
 }
 
 Integer Integer::operator*(const Integer &i) const {
+  if (d.size() == 0 || i.d.size() == 0)
+    return Integer(0);
   Integer r;
   r.negativ = (negativ ^ i.negativ);
   int N =
@@ -134,8 +141,8 @@ Integer Integer::operator*(const Integer &i) const {
           d.size() + i.d.size() - 1;
   r.d.reserve(N + 1);
 #else
-  n + i.n - 1;
-d = new char[N + 1];
+          n + i.n - 1;
+  d = new char[N + 1];
 #endif
   // 0 : (0,0)
   // 1 : (1,0) + (0,1)
@@ -333,4 +340,21 @@ void Integer::removeZeros() {
     n--;
   }
 #endif
+}
+
+bool Integer::check(const int n, const char d[]) {
+  if (n == 0)
+    return true;
+  //bool sign;
+  for (int i = 0; i < n; ++i) {
+    if(d[i] != 0) {
+      negativ = d[i] < 0;
+      break;
+    }
+  }
+
+  for (int i = 1; i < n; ++i) {
+    if (d[i] != 0 && d[i] < 0 != negativ) { return false; }
+  }
+  return true;
 }

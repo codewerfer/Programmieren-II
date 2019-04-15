@@ -58,4 +58,6 @@ private:
   void deopt(int &i, bool &int_min);
   void removeZeros();
   static Integer add(const Integer &i1, const Integer &i2);
+
+  bool check(const int n, const char d[]);
 };

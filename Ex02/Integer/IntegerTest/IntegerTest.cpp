@@ -71,8 +71,8 @@ TEST(Constructor1, intMinp1) {
 }
 
 TEST(Constructor2, Zero) {
-  char d[] = {0};
-  int n = 1;
+  char d[] = {0,0,0,0,0};
+  int n = 5;
   Integer i0 = Integer(n, d);
   Integer i1 = Integer(0);
 
@@ -119,7 +119,7 @@ TEST(Constructor2, minus336699) {
 }
 
 TEST(Constructor2, big) {
-  string exp = "9078564312907856431290785643129078564312";
+  string exp = "9078563412907856341290785634129078563412";
   char d[] = {12, 34, 56, 78, 90, 12, 34, 56, 78, 90, 12, 34, 56, 78, 90, 12, 34, 56, 78, 90};
   int n = 20;
   Integer i0 = Integer(n, d);
@@ -270,7 +270,7 @@ TEST(OperatorPlus, OverflowBig) {
   Integer i0 = Integer(n, d);
   Integer i1 = Integer(1);
 
-  char d2[] = {00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 1};
+  char d2[] = {00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 01};
   int n2 = 11;
   Integer exp = Integer(n2, d2);
 
