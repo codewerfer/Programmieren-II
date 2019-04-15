@@ -360,7 +360,7 @@ Integer Integer::add(const Integer &i1, const Integer &i2) {
 
 void Integer::removeZeros() {
 #ifdef VECTOR
-  while (d.back() == 0 && d.size() > 0) {
+  while (d.size() > 0 && d.back() == 0) {
     d.pop_back();
   }
 #else

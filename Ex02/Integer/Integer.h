@@ -4,7 +4,7 @@
 #include <sstream>
 
 // use a std::vector for d, comment out for char* d
-//#define VECTOR
+#define VECTOR
 
 #ifdef VECTOR
 #include <vector>
