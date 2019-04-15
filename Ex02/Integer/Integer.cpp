@@ -5,6 +5,7 @@ Integer::Integer(const Integer &i) : negativ(i.negativ) {
   d = i.d;
 }
 #else
+
 Integer::Integer(const Integer &i) : n(i.n), negativ(i.negativ) {
   if (n > 0) {
     d = new char[n];
@@ -13,6 +14,7 @@ Integer::Integer(const Integer &i) : n(i.n), negativ(i.negativ) {
     }
   }
 }
+
 #endif
 
 Integer::Integer(int i) {
@@ -33,7 +35,9 @@ Integer::Integer(int i) {
 #ifdef VECTOR
   d.reserve(n);
 #else
-  this->d = new char[n];
+  if (n > 0) {
+    this->d = new char[n];
+  }
 #endif // VECTOR
 
   div_t result;
@@ -67,8 +71,7 @@ Integer::deopt(int &i, bool &int_min) {
 }
 
 Integer::Integer(int n, char *d) {
-  if(!check(n, d))
-  {
+  if (!check(n, d)) {
     throw runtime_error("Arguments for Integer(int n, char* d) are invalid.");
   }
 #ifndef VECTOR
@@ -89,7 +92,10 @@ Integer::~Integer() {
 #ifdef VECTOR
   d.clear();
 #else
-  delete[] d;
+  if (n > 0) {
+    delete[](d);
+    d = nullptr;
+  }
 #endif // !VECTOR
 }
 
@@ -121,7 +127,7 @@ Integer Integer::operator+(const Integer &i) const {
 #ifdef VECTOR
     if (this->d.size() < i.d.size())
 #else
-      if (n < i.n)
+    if (n < i.n)
 #endif
     {
       return add(i, *this);
@@ -146,8 +152,8 @@ Integer Integer::operator*(const Integer &i) const {
   r.negativ = (negativ ^ i.negativ);
   int N =
 #ifdef VECTOR
-          d.size() + i.d.size() - 1;
-  r.d.reserve(N + 1);
+  d.size() + i.d.size() - 1;
+r.d.reserve(N + 1);
 #else
           n + i.n - 1;
   r.d = new char[N + 1];
@@ -165,8 +171,8 @@ Integer Integer::operator*(const Integer &i) const {
       sum += abs((j - k) > d.size()-1 ? 0 : d[j - k])
               * abs(k > i.d.size()-1 ? 0 : i.d[k]);
 #else
-      sum += abs((j - k) > n-1 ? 0 : d[j - k])
-             * abs(k > i.n-1 ? 0 : i.d[k]);
+      sum += abs((j - k) > n - 1 ? 0 : d[j - k])
+             * abs(k > i.n - 1 ? 0 : i.d[k]);
 #endif
     }
     result = div(sum, 100);
@@ -177,7 +183,7 @@ Integer Integer::operator*(const Integer &i) const {
 #endif
     sum = result.quot;
   }
-  if(sum > 0) {
+  if (sum > 0) {
 #ifdef VECTOR
     r.d.push_back(r.negativ ? -sum : sum);
 #else
@@ -358,8 +364,11 @@ void Integer::removeZeros() {
     d.pop_back();
   }
 #else
-  while (d[n-1] == 0 && n > 0) {
+  while (n > 0 && d[n - 1] == 0) {
     n--;
+  }
+  if (n == 0) {
+    delete[] d;
   }
 #endif
 }
@@ -368,7 +377,7 @@ bool Integer::check(const int n, const char d[]) {
   if (n == 0)
     return true;
   for (int i = 0; i < n; ++i) {
-    if(d[i] != 0) {
+    if (d[i] != 0) {
       negativ = d[i] < 0;
       break;
     }
