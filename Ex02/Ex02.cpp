@@ -5,8 +5,6 @@
 
 int main()
 {
-  char d[] = {0,0,0};
-  Integer i(3,d);
 	char d1[] = { 45, 23, 1 };
 	char d2[] = { -99, -66, -33, 0, 0 };
 	Integer i1(3, d1); Integer i2(5, d2);

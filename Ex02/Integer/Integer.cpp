@@ -101,7 +101,7 @@ Integer::~Integer() {
 
 Integer Integer::operator-() const {
 #ifdef VECTOR
-  int n = d.size();
+  int n = (int)d.size();
 #endif
   if (n == 0)
     return *this;
@@ -152,7 +152,7 @@ Integer Integer::operator*(const Integer &i) const {
   r.negativ = (negativ ^ i.negativ);
   int N =
 #ifdef VECTOR
-  d.size() + i.d.size() - 1;
+          (int)d.size() + (int)i.d.size() - 1;
 r.d.reserve(N + 1);
 #else
           n + i.n - 1;
@@ -284,6 +284,7 @@ Integer &Integer::operator=(const Integer &i) {
   if (&i == this) {
     return *this;
   }
+  negativ = i.negativ;
 #ifdef VECTOR
   d.clear();
   d = i.d;
@@ -307,8 +308,8 @@ Integer Integer::add(const Integer &i1, const Integer &i2) {
   div_t result;
   r.negativ = i1.negativ;
 #ifdef VECTOR
-  int s1 = i1.d.size();
-  int s2 = i2.d.size();
+  int s1 = (int)i1.d.size();
+  int s2 = (int)i2.d.size();
 #else
   int s1 = i1.n;
   int s2 = i2.n;

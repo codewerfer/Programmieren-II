@@ -7,7 +7,7 @@ Rational::Rational(const Integer &n, const Integer &d) {
   }
   bool negativD = d <= zero;
   this->n = negativD ? -n : n;
-  this->d = negativD ? -d : n;
+  this->d = negativD ? -d : d;
 }
 
 Rational::~Rational() {}

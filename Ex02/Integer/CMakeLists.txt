@@ -2,7 +2,7 @@
 
 project("Integer" CXX)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_library(Integer Integer.cpp)
 target_include_directories(Integer PUBLIC ./)
 

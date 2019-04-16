@@ -70,9 +70,21 @@ TEST(Constructor1, intMinp1) {
 	ASSERT_STREQ(s0.str().c_str(), s1.c_str());
 }
 
-TEST(Constructor2, Zero) {
+TEST(Constructor2, Zero1) {
   char d[] = {0,0,0,0,0};
   int n = 5;
+  Integer i0 = Integer(n, d);
+  Integer i1 = Integer(0);
+
+  ASSERT_EQ(i0, i1);
+  stringstream s0;
+  s0 << i0;
+  ASSERT_STREQ(s0.str().c_str(), "0");
+}
+
+TEST(Constructor2, Zero2) {
+  char d[] = {0,0,0,0,0};
+  int n = 0;
   Integer i0 = Integer(n, d);
   Integer i1 = Integer(0);
 
@@ -135,6 +147,75 @@ TEST(Constructor2, fail) {
   ASSERT_THROW(Integer(n,d), runtime_error);
 }
 
+TEST(OperatorCopyAssignment, Copy) {
+  char d[] = {42,53,61};
+  int n = 3;
+  Integer i0(n, d);
+  Integer i1(n, d);
+
+  ASSERT_TRUE(i0 == i1);
+  ASSERT_FALSE(&i0 == &i1);
+
+  Integer i2;
+  i2 = i0;
+  ASSERT_TRUE(i0 == i2);
+  ASSERT_FALSE(&i0 == &i2);
+
+  Integer i3;
+  i3 = -i0;
+  ASSERT_TRUE(i0 == -i3);
+  ASSERT_TRUE(-i0 == i3);
+  ASSERT_FALSE(i0 == i3);
+  ASSERT_FALSE(-i0 == -i3);
+
+  stringstream s0;
+  s0 << i3;
+  ASSERT_STREQ(s0.str().c_str(), "-615342");
+}
+
+TEST(OperatorCopyAssignment, CopyNegativ) {
+  char d[] = {-42,-53,-61};
+  int n = 3;
+  Integer i0(n, d);
+  Integer i1(n, d);
+
+  stringstream s0;
+  s0 << i0;
+  ASSERT_STREQ(s0.str().c_str(), "-615342");
+
+  ASSERT_TRUE(i0 == i1);
+  ASSERT_FALSE(&i0 == &i1);
+
+  Integer i2;
+  i2 = -i0;
+  ASSERT_TRUE(i0 == -i2);
+  ASSERT_TRUE(-i0 == i2);
+  ASSERT_FALSE(i0 == i2);
+  ASSERT_FALSE(-i0 == -i2);
+  ASSERT_FALSE(&i0 == &i2);
+
+  stringstream s1;
+  s1 << i2;
+  ASSERT_STREQ(s1.str().c_str(), "615342");
+}
+
+TEST(OperatorCopyAssignment, Self) {
+  char d1[] = {42,53,61};
+  char d2[] = {36,74,21};
+  int n = 3;
+  Integer i0(n, d1);
+  Integer* add = &i0;
+
+  i0 = i0;
+  ASSERT_TRUE(*add == i0);
+  ASSERT_TRUE(add == &i0);
+
+  Integer i1(n, d2);
+  i0 = i1;
+  ASSERT_TRUE(*add == i1);
+  ASSERT_FALSE(add == &i1);
+}
+
 TEST(OperatorNegativ, toNegativ42) {
   int exp = -42;
   Integer e(exp);
@@ -183,6 +264,7 @@ TEST(OperatorNegativ, toPositiv21) {
   s << i;
 
   ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
+  ASSERT_STREQ(s.str().c_str(), "-21");
   ASSERT_FALSE(i == e);
 }
 
@@ -196,7 +278,7 @@ TEST(OperatorNegativ, toPositiv4258976) {
   s << i;
 
   ASSERT_STREQ(s.str().c_str(), to_string(-exp).c_str());
-
+  ASSERT_STREQ(s.str().c_str(), "-4258976");
   ASSERT_FALSE(i == e);
 }
 
@@ -473,6 +555,7 @@ TEST(OperatorEqual, OneOne) {
   Integer i1(1);
 
   ASSERT_TRUE(i0 == i1);
+  ASSERT_TRUE(i1 == i0);
 }
 
 TEST(OperatorEqual, mOneOne) {
@@ -480,6 +563,7 @@ TEST(OperatorEqual, mOneOne) {
   Integer i1(-1);
 
   ASSERT_TRUE(i0 == i1);
+  ASSERT_TRUE(i1 == i0);
 }
 
 TEST(OperatorEqual, ZeroBig) {
@@ -489,6 +573,7 @@ TEST(OperatorEqual, ZeroBig) {
   ASSERT_TRUE(i0 == i0);
   ASSERT_TRUE(i1 == i1);
   ASSERT_FALSE(i0 == i1);
+  ASSERT_FALSE(i1 == i0);
 }
 
 TEST(OperatorEqual, ZeroSmall) {
@@ -498,6 +583,7 @@ TEST(OperatorEqual, ZeroSmall) {
   ASSERT_TRUE(i0 == i0);
   ASSERT_TRUE(i1 == i1);
   ASSERT_FALSE(i0 == i1);
+  ASSERT_FALSE(i1 == i0);
 }
 
 TEST(OperatorEqual, np) {
@@ -507,6 +593,7 @@ TEST(OperatorEqual, np) {
   ASSERT_TRUE(i0 == i0);
   ASSERT_TRUE(i1 == i1);
   ASSERT_FALSE(i0 == i1);
+  ASSERT_FALSE(i1 == i0);
 }
 
 TEST(OperatorLessEqual, ZeroOne) {
@@ -526,6 +613,7 @@ TEST(OperatorLessEqual, OneOne) {
   ASSERT_TRUE(i0 <= i0);
   ASSERT_TRUE(i1 <= i1);
   ASSERT_TRUE(i0 <= i1);
+  ASSERT_TRUE(i1 <= i0);
 }
 
 TEST(OperatorLessEqual, OneTwo) {
@@ -545,6 +633,7 @@ TEST(OperatorLessEqual, mOnemOne) {
   ASSERT_TRUE(i0 <= i0);
   ASSERT_TRUE(i1 <= i1);
   ASSERT_TRUE(i0 <= i1);
+  ASSERT_TRUE(i1 <= i0);
 }
 
 TEST(OperatorLessEqual, ZeroZero) {
@@ -554,6 +643,7 @@ TEST(OperatorLessEqual, ZeroZero) {
   ASSERT_TRUE(i0 <= i0);
   ASSERT_TRUE(i1 <= i1);
   ASSERT_TRUE(i0 <= i1);
+  ASSERT_TRUE(i1 <= i0);
 }
 
 TEST(OperatorLessEqual, ZeroBig) {
@@ -740,6 +830,7 @@ TEST(Copy, Constructor) {
   Integer i0(42);
   Integer i1 = i0;
   ASSERT_TRUE(i0 == i1);
+  ASSERT_FALSE(&i0 == &i1);
   i0 = i0 + Integer(1);
   ASSERT_FALSE(i0 == i1);
 }
@@ -749,6 +840,7 @@ TEST(Copy, Assigment) {
   Integer i1;
   i1 = i0;
   ASSERT_TRUE(i0 == i1);
+  ASSERT_FALSE(&i0 == &i1);
   i0 = i0 + Integer(1);
   ASSERT_FALSE(i0 == i1);
 }

@@ -4,6 +4,16 @@
 class Rational {
   Integer n;
   Integer d;
+
+public:
+  // default
+  Rational() : d(Integer(1)) {};
+  // copy constructor
+  //Rational(const Rational& i) = default;
+
+  // copy assigment operator
+  //Rational& operator=(const Rational& i) = default;
+
 public:
 	// rational with numerator <n> and denominator <d> (both may be negative)
 	Rational(const Integer& n, const Integer& d);
