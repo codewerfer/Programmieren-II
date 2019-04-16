@@ -3,7 +3,7 @@
 // Google Test file for class Integer
 //
 // Author: Jürgen Vogl <k1355432>
-// Last Modification: 07.04.2019
+// Last Modification: 16.04.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------
@@ -132,7 +132,8 @@ TEST(Constructor2, minus336699) {
 
 TEST(Constructor2, big) {
   string exp = "9078563412907856341290785634129078563412";
-  char d[] = {12, 34, 56, 78, 90, 12, 34, 56, 78, 90, 12, 34, 56, 78, 90, 12, 34, 56, 78, 90};
+  char d[] = {12, 34, 56, 78, 90, 12, 34, 56, 78, 90,
+              12, 34, 56, 78, 90, 12, 34, 56, 78, 90};
   int n = 20;
   Integer i0 = Integer(n, d);
 

@@ -1,10 +1,20 @@
+// ---------------------------------------------------------
+// Integer.h
+// Header file for class Integer
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 16.04.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
+
 #include <ostream>
 #include <cmath>
 #include <iostream>
 #include <sstream>
 
 // use a std::vector for d, comment out for char* d
-#define VECTOR
+//#define VECTOR
 
 #ifdef VECTOR
 #include <vector>
@@ -16,6 +26,10 @@
 
 using namespace std;
 
+/**
+ * Integer Class
+ * Represents a Decimal Integer up to a length of 2*(2^31-1) = 2^32-2
+ */
 class Integer {
 	bool negativ = false;
 #ifdef VECTOR
@@ -31,6 +45,8 @@ public:
 
   // copy assigment operator
   Integer& operator=(const Integer& i);
+
+  // original code
 public:
 	// integer number representing value <i>, default 0
 	explicit Integer(int i = 0);
@@ -54,6 +70,7 @@ public:
 	bool operator==(const Integer& i) const;
 	bool operator<=(const Integer& i) const;
 
+	// private stuff
 private:
   void deopt(int &i, bool &int_min);
   void removeZeros();

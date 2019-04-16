@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// Integer.cpp
+// Source file for class Integer
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 16.04.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #include "Integer.h"
 
 #ifdef VECTOR

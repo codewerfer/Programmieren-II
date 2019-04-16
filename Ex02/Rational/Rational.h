@@ -1,12 +1,25 @@
+// ---------------------------------------------------------
+// Rational.h
+// Header file for class Rational
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 16.04.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #include "../Integer/Integer.h"
 
 #pragma once
+/**
+ * Rational class Integer n / Integer d.
+ */
 class Rational {
+  // Rational := n/d;
   Integer n;
   Integer d;
 
 public:
-  // default
+  // default constructor
   Rational() : d(Integer(1)) {};
   // copy constructor
   //Rational(const Rational& i) = default;
