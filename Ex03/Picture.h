@@ -12,12 +12,20 @@
 #include "Polygon.h"
 //#include "LinkedList.cpp"
 
+/**
+ * \brief Creates a picture, a list of Polygon*.
+ * Can draw this list in a separate Window.
+ */
 class Picture
 {
-  LinkedList<Polygon*> list;
+  LinkedList<Polygon*> list; // Polygon* list
 
 public:
+  // default constructor
   Picture();
+  // add Polygon* to list
   void add(Polygon* p);
+  // Opens a new grafic windows with size w and h and draws
+  // the Polygons in list from Base Postition x/y with a scale f
   void draw(double x, double y, double w, double h, double f = 1.0);
 };
