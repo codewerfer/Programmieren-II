@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.0)
 
 project("ProgrammierenII" CXX)
 
@@ -19,4 +19,5 @@ add_subdirectory("gtest")
 #add_subdirectory("Drawing")
 #add_subdirectory("DrawingTest")
 #add_subdirectory("Ex01")
-add_subdirectory("Ex02")
+#add_subdirectory("Ex02")
+add_subdirectory("Ex03")
