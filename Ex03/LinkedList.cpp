@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// LinkedList.cpp
+// Source file for class LinkedList<T>
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 05.05.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #include "LinkedList.h"
 
 template <class T>

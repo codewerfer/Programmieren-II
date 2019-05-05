@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// Polygon.cpp
+// Source file for Polygon class
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 05.05.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #include "Polygon.h"
 
 

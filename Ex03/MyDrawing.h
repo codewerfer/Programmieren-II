@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// MyDrawing.h
+// Configuration and import of Drawing.h
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 05.05.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #pragma once
 
 // gives out text instead of graphics

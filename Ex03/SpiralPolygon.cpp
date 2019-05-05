@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// SpiralPolygon.cpp
+// Source file for SpiralPolygon class
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 05.05.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #include "SpiralPolygon.h"
 
 
@@ -5,21 +14,20 @@ int SpiralPolygon::changeColor(int s, bool seed)
 {
   if (seed)
   {
-    std::srand(s);
+    srand(s);
   }
   // RAND_MAX may not be big enough
   if (RAND_MAX >= 0xFFFFFF)
   {
-    return (std::rand() & 0xFFFFFF);
+    return (rand() & 0xFFFFFF);
   }
   else if (RAND_MAX >= 0xFFF)
   {
     // 2 times 12 bit
-    return (std::rand() << 12 & 0xFFF000) | (std::rand() & 0xFFF);
+    return (rand() << 12 & 0xFFF000) | (rand() & 0xFFF);
   }
   // 3 times 8 bit
-  return (std::rand() << 16 & 0xFF0000) | (std::rand() << 8 & 0xFF00) | (std::
-    rand() & 0xFF);
+  return (rand() << 16 & 0xFF0000) | (rand() << 8 & 0xFF00) | (rand() & 0xFF);
 }
 
 SpiralPolygon::SpiralPolygon(int n, int s, int c, double x, double y, double r,

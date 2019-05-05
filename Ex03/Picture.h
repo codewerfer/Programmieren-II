@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// Picture.h
+// Header file for Picture class
+//
+// Author: Jürgen Vogl <k1355432>
+// Last Modification: 05.05.2019
+//
+// (c) Jürgen Vogl, 2019
+// ----------------------------------------------------------
 #pragma once
 
 #include "Polygon.h"
