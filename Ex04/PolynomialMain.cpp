@@ -21,21 +21,6 @@ int main(int argc, char* argv[]) {
 	Sleep(2000);
 #endif
 
-	Integer* i = new Integer();
-	Integer* j = new Integer();
-	Polynomial* k = new Polynomial(0, nullptr);
-	Polynomial* l = new Polynomial(0, nullptr);
-
-	cout << "i == j: " << (i->operator==(j)) << endl;
-	cout << "i == k: " << (i->operator==(k)) << endl;
-	cout << "k == j: " << (k->operator==(j)) << endl;
-	cout << "k == l: " << (k->operator==(l)) << endl;
-
-	delete i;
-	delete j;
-	delete k;
-	delete l;
-
 	// variable names and exponent vectors ("power products")
 	string vars[2] = { "x", "y" };
 	int e1[2] = { 1,2 }; int e2[2] = { 2,1 }; int e3[2] = { 1,0 };
@@ -54,9 +39,9 @@ int main(int argc, char* argv[]) {
 	Polynomial* r = p->operator+(q)->operator+(q);
 	cout << r->str() << endl;
 
-	//delete p;
+	delete p;
 	delete q;
-	delete r;
+	//delete r;
 
 #ifdef _WIN32
 	Sleep(2000);

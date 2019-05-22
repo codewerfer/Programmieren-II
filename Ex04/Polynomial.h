@@ -8,7 +8,7 @@ class Polynomial : public Ring
 {
 	// 3xy^2 => coeff :=3, exps = {1, 2} with variableNames "xy"
 	struct Monomial {
-		Ring* coeff;
+		Ring* coeff = nullptr;
 		int* exps;
     Monomial() : coeff(nullptr), exps(nullptr) { }
     Monomial(Ring* coeff, int* exps, int count) : coeff(coeff), exps(exps), count(count) { }
@@ -46,7 +46,7 @@ public:
 	Polynomial& add(Ring * coeff, int* exps);
 
 	// destructor
-	virtual ~Polynomial();
+	~Polynomial();
 
 	// Copy constructor
 	  // Polynomial(const Polynomial& polynomial);
@@ -60,6 +60,7 @@ public:
 	bool operator==(Ring * c) override;
 
 private:
+  Polynomial& add2(Ring * coeff, int* exps);
   // Extends monomials array
   void monomialsExtend();
   // move monomials[pos] to monomials[pos + rel],

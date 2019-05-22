@@ -36,29 +36,60 @@ Polynomial::Polynomial(int n, std::string* vars) : variableCount(n), variableNam
 
 Polynomial& Polynomial::add(Ring* coeff, int* exps) {
 	if (coeff == 0/*Ring::zero()*/) {
+	  delete coeff;
 		return *this;
 	}
 	int pos = monomialsPos(exps);
 	if (pos == monomialsCount || compareExpt(monomials[pos].exps, exps) < 0)
 		monomialsInsert(Monomial(coeff, exps, variableCount), pos);
 	else {
-		if (monomials[pos].coeff->operator+(coeff) == 0/*Ring::zero()*/) {
+    Ring* sum1 = monomials[pos].coeff->operator+(coeff);
+    if (sum1 == 0/*Ring::zero()*/) {
       monomialsMove(pos, -1);
-      //delete coeff;
+      delete sum1;
     }
-		else {
-      monomials[pos].coeff = monomials[pos].coeff->operator+(coeff);
+    else {
+      if(monomials[pos].coeff)
+        delete monomials[pos].coeff;
+      monomials[pos].coeff = std::move(sum1);
     }
-		//delete coeff;
+		delete coeff;
 	}
 	return *this;
+}
+
+Polynomial& Polynomial::add2(Ring* coeff, int* exps) {
+  if (coeff == 0/*Ring::zero()*/) {
+    return *this;
+  }
+  int pos = monomialsPos(exps);
+  if (pos == monomialsCount || compareExpt(monomials[pos].exps, exps) < 0)
+    monomialsInsert(Monomial(coeff, exps, variableCount), pos);
+  else {
+    Ring* sum1 = monomials[pos].coeff->operator+(coeff);
+    if (sum1 == 0/*Ring::zero()*/) {
+      monomialsMove(pos, -1);
+      delete sum1;
+    }
+    else {
+      if(monomials[pos].coeff != coeff) {
+        delete monomials[pos].coeff;
+        monomials[pos].coeff = nullptr;
+      }
+      monomials[pos].coeff = std::move(sum1);
+    }
+  }
+  return *this;
 }
 
 Polynomial::~Polynomial()
 {
 	if (monomials) {
-    for (int i = 0; i < monomialsCount; ++i) {
-      delete monomials[i].coeff;
+    for (int i = 0; i < monomialsMaxSize; ++i) {
+      if(monomials[i].coeff != nullptr) {
+        delete monomials[i].coeff;
+        monomials[i].coeff = nullptr;
+      }
     }
 		delete[] monomials;
 		monomials = nullptr;
@@ -89,7 +120,7 @@ Polynomial* Polynomial::operator+(Ring* c) {
 	}
 	Polynomial* other = dynamic_cast<Polynomial*>(c);
   for (int i = 0; i < other->monomialsCount; ++i) {
-	  add(other->monomials[i].coeff, other->monomials[i].exps);
+	  add2(other->monomials[i].coeff, other->monomials[i].exps);
   }
 	return this;
 }
@@ -131,14 +162,13 @@ void Polynomial::monomialsMove(int pos, int rel) {
 	if (rel == 1) {
 		if (monomialsCount == monomialsMaxSize)
 			monomialsExtend();
-		//std::move_backward(monomials[pos], monomials[monomialsCount - 1], monomials[pos + 1]);
 		memmove(&monomials[pos + 1], &monomials[pos], (monomialsCount - pos) * sizeof(monomials[pos]));
 		monomialsCount++;
 	}
 	else if (rel == -1) {
-		//Monomial* remove = &monomials[pos];
+		Ring* remove = monomials[pos].coeff;
 		memmove(&monomials[pos], &monomials[pos + 1], (monomialsCount - pos) * sizeof(monomials[pos]));
-		//delete remove;
+		delete remove;
 		monomialsCount--;
 	}
 	else {
