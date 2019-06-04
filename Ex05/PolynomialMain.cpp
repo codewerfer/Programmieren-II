@@ -3,7 +3,7 @@
  * Main file for Exercise 5
  *
  * Author: Jürgen Vogl <k1355432>
- * Last Modification: 23.05.2019
+ * Last Modification: 04.06.2019
  *
  * <c> Jürgen Vogl, 2019
  */

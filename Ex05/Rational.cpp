@@ -3,7 +3,7 @@
 // Header file for class Integer
 //
 // Author: Jürgen Vogl <k1355432>
-// Last Modification: 16.04.2019
+// Last Modification: 04.06.2019
 //
 // (c) Jürgen Vogl, 2019
 // ----------------------------------------------------------

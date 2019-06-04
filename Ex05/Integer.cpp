@@ -3,7 +3,7 @@
  * Source file for Integer class
  *
  * Author: Jürgen Vogl <k1355432>
- * Last Modification: 23.05.2019
+ * Last Modification: 04.06.2019
  *
  * <c> Jürgen Vogl, 2019
  */
@@ -32,4 +32,3 @@ bool Integer::operator==(Ring *c) {
   }
   return n == dynamic_cast<Integer *>(c)->n;
 }
-

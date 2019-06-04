@@ -2,8 +2,16 @@
  * Rational.h
  * Header file for class Rational
  *
- * Assert this was created after Polynomial.
- * So, this file knows about Polynomial, but Polynomial not about this file.
+ * Assert this was created after Polynomial by somebody who doesn't know
+ * what exact polynomial is - like me.
+ *
+ * This person only knows that it's his job to implement a
+ *      class Rational : Ring
+ * and to deliver it to somebody else as
+ *      typedef Polynomial<Rational> RatPoly
+ *
+ * So, this file knows of the existence of some Polynomial, but not what that is
+ * and even Polynomial does not know about this file.
  *
  * Author: Jürgen Vogl <k1355432>
  *
@@ -13,10 +21,9 @@
 #pragma once
 
 #include "Ring.h"
-//#include "Polynomial.h" // not necessary
 
 /**
- * forward declatrations
+ * forward declaration
  */
 class Rational;
 template <class R> class Polynomial;
