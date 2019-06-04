@@ -32,7 +32,7 @@ typedef Polynomial<Rational> RatPoly;
 /**
  * Rational class long n / long d.
  */
-class Rational : Ring {
+class Rational : public Ring {
   // Rational := n/d;
   long n;
   long d;

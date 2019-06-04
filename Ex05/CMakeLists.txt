@@ -2,7 +2,7 @@
 
 project("Ex05" CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 #SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}"--coverage")
 #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}"--coverage")

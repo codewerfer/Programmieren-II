@@ -18,7 +18,7 @@ namespace {
     Tupple tu;
     tu.n = redN;
     tu.d = redD;
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || _MSVC_LANG >= 201703L
     long gcd = std::gcd(redN, redD);
     if (gcd > 1) {
       tu.n /= gcd;
