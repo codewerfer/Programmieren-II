@@ -16,7 +16,7 @@
 #include <synchapi.h>
 #endif
 
-#include "Polynomial.h"
+//#include "Polynomial.cpp"
 #include "Integer.h"
 
 using namespace std;
@@ -36,16 +36,16 @@ int main(int argc, char *argv[]) {
   int e6[2] = {2, 2};
 
   // construct polynomials p and q in two variables
-  Polynomial *p = new Polynomial(2, vars);
+  IntPoly *p = new IntPoly(2, vars);
   p->add(new Integer(3), e1).add(new Integer(5), e2).add(new Integer(7), e3)
           .add(new Integer(11), e4).add(new Integer(13), e5);
-  Polynomial *q = new Polynomial(2, vars);
+  IntPoly *q = new IntPoly(2, vars);
   q->add(new Integer(11), e4).add(new Integer(-3), e2).add(new Integer(2), e6)
           .add(new Integer(-2), e2);
   // print p and q
   cout << p->str() << endl << q->str() << endl;
   // set p to p+2*q and print it
-  Polynomial *r = p->operator+(q)->operator+(q);
+  IntPoly *r = p->operator+(q)->operator+(q);
   cout << r->str() << endl;
 
   delete p;

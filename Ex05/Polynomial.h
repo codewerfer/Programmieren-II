@@ -22,7 +22,9 @@
  * x, y, ..:    variables of type std::string
  * a1, b1, ..:  exps of integer type (pointers)
  */
-class Polynomial : public Ring {
+template<class R>
+class Polynomial : public Ring
+{
   /**
    * Monomial struct
    *
@@ -33,12 +35,12 @@ class Polynomial : public Ring {
    * specification says so..
    */
   struct Monomial {
-    Ring *coeff = nullptr;
+    R *coeff = nullptr;
     int *exps;
 
     Monomial() : coeff(nullptr), exps(nullptr) {}
 
-    Monomial(Ring *coeff, int *exps, int count)
+    Monomial(R *coeff, int *exps, int count)
         : coeff(coeff), exps(exps), count(count) {}
 
     int count; // must be set to variableCount
@@ -76,8 +78,8 @@ public:
 
   // add new term with given coefficient and exponents to this polynomial
   // and return this polynomial
-  // ATTENTION: consumes Ring* coeff, doesn't exists after destroy of Polynomial
-  Polynomial &add(Ring *coeff, int *exps);
+  // ATTENTION: consumes R* coeff, doesn't exists after destroy of Polynomial
+  Polynomial &add(R *coeff, int *exps);
 
   // destructor
   ~Polynomial();
@@ -89,22 +91,22 @@ public:
   // Polynomial& operator=(const Polynomial& polynomial);
 
   // Polynom as std::string
-  std::string str() override;
+  std::string str() ;
 
   // Zero representation of polynom
-  Polynomial *zero() override;
+  Polynomial *zero() ;
 
   // adds Polynomial c to this Polynomial
-  Polynomial *operator+(Ring *c) override;
+  Polynomial *operator+(Polynomial<R> *c) ;
 
   // compares 2 polynoms
-  bool operator==(Ring *c) override;
+  bool operator==(Polynomial<R> *c) ;
 
 private:
   // add new term with given coefficient and exponents to this polynomial
   // and return this polynomial
-  // ATTENTION: doesn't consumes Ring* coeff, needs delete afterwards
-  Polynomial &add2(Ring *coeff, int *exps);
+  // ATTENTION: doesn't consumes R* coeff, needs delete afterwards
+  Polynomial &add2(R *coeff, int *exps);
 
   // Extends monomials array
   void monomialsExtend();

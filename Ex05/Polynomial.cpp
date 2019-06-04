@@ -11,7 +11,8 @@
 #include <sstream>
 #include <cstring>
 
-std::string Polynomial::Monomial::str() {
+template<class R>
+std::string Polynomial<R>::Monomial::str() {
   std::stringstream stream;
   stream << "<" << coeff->str() << "[";
   for (int i = 0; i < count; ++i) {
@@ -23,7 +24,8 @@ std::string Polynomial::Monomial::str() {
   return stream.str();
 }
 
-/*int Polynomial::Monomial::compare(const Monomial& rhs) {
+/*template<class R>
+int Polynomial<R>::Monomial::compare(const Monomial& rhs) {
 	if (count != rhs.count)
 		throw std::runtime_error("Not supported for different variableCount.");
 	for (int i = 0; i < count; ++i) {
@@ -36,7 +38,8 @@ std::string Polynomial::Monomial::str() {
 	return 0;
 }*/
 
-Polynomial::Polynomial(int n, std::string *vars)
+template<class R>
+Polynomial<R>::Polynomial(int n, std::string *vars)
         : variableCount(n), variableNames(vars) {
   monomials = new Monomial[DEFAULT_SIZE];
   for (int i = 0; i < DEFAULT_SIZE; ++i) {
@@ -44,8 +47,9 @@ Polynomial::Polynomial(int n, std::string *vars)
   }
 }
 
-Polynomial &Polynomial::add(Ring *coeff, int *exps) {
-  if (coeff == 0/*Ring::zero()*/) {
+template<class R>
+Polynomial<R> &Polynomial<R>::add(R *coeff, int *exps) {
+  if (coeff == 0/*R::zero()*/) {
     delete coeff;
     return *this;
   }
@@ -53,8 +57,8 @@ Polynomial &Polynomial::add(Ring *coeff, int *exps) {
   if (pos == monomialsCount || compareExpt(monomials[pos].exps, exps) < 0)
     monomialsInsert(Monomial(coeff, exps, variableCount), pos);
   else {
-    Ring *sum1 = monomials[pos].coeff->operator+(coeff);
-    if (sum1 == 0/*Ring::zero()*/) {
+    R *sum1 = monomials[pos].coeff->operator+(coeff);
+    if (sum1 == 0/*R::zero()*/) {
       monomialsMove(pos, -1);
       delete sum1;
     } else {
@@ -67,16 +71,17 @@ Polynomial &Polynomial::add(Ring *coeff, int *exps) {
   return *this;
 }
 
-Polynomial &Polynomial::add2(Ring *coeff, int *exps) {
-  if (coeff == 0/*Ring::zero()*/) {
+template<class R>
+Polynomial<R> &Polynomial<R>::add2(R *coeff, int *exps) {
+  if (coeff == 0/*R::zero()*/) {
     return *this;
   }
   int pos = monomialsPos(exps);
   if (pos == monomialsCount || compareExpt(monomials[pos].exps, exps) < 0)
     monomialsInsert(Monomial(coeff, exps, variableCount), pos);
   else {
-    Ring *sum1 = monomials[pos].coeff->operator+(coeff);
-    if (sum1 == 0/*Ring::zero()*/) {
+    R *sum1 = monomials[pos].coeff->operator+(coeff);
+    if (sum1 == 0/*R::zero()*/) {
       monomialsMove(pos, -1);
       delete sum1;
     } else {
@@ -90,7 +95,8 @@ Polynomial &Polynomial::add2(Ring *coeff, int *exps) {
   return *this;
 }
 
-Polynomial::~Polynomial() {
+template<class R>
+Polynomial<R>::~Polynomial() {
   if (monomials) {
     for (int i = 0; i < monomialsMaxSize; ++i) {
       if (monomials[i].coeff != nullptr) {
@@ -103,7 +109,8 @@ Polynomial::~Polynomial() {
   }
 }
 
-std::string Polynomial::str() {
+template<class R>
+std::string Polynomial<R>::str() {
   std::stringstream stream;
   stream << "[";
   if (monomialsCount == 0)
@@ -117,11 +124,13 @@ std::string Polynomial::str() {
   return stream.str();
 }
 
-Polynomial *Polynomial::zero() {
+template<class R>
+Polynomial<R> *Polynomial<R>::zero() {
   return new Polynomial(0, nullptr);
 }
 
-Polynomial *Polynomial::operator+(Ring *c) {
+template<class R>
+Polynomial<R> *Polynomial<R>::operator+(Polynomial<R> *c) {
   if (typeid(*this) != typeid(*c)) {
     throw std::runtime_error("Added not defined for different types");
   }
@@ -132,7 +141,8 @@ Polynomial *Polynomial::operator+(Ring *c) {
   return this;
 }
 
-bool Polynomial::operator==(Ring *c) {
+template<class R>
+bool Polynomial<R>::operator==(Polynomial<R> *c) {
   if (typeid(*this) != typeid(*c)) {
     return false;
   }
@@ -152,7 +162,8 @@ bool Polynomial::operator==(Ring *c) {
   return true;
 }
 
-void Polynomial::monomialsExtend() {
+template<class R>
+void Polynomial<R>::monomialsExtend() {
   int newSize = monomialsMaxSize + DEFAULT_SIZE;
   Monomial *newMonomials = new Monomial[newSize];
   // move all Pointers from old array to new;
@@ -165,7 +176,8 @@ void Polynomial::monomialsExtend() {
   monomialsMaxSize = newSize;
 }
 
-void Polynomial::monomialsMove(int pos, int rel) {
+template<class R>
+void Polynomial<R>::monomialsMove(int pos, int rel) {
   if (rel == 1) {
     if (monomialsCount == monomialsMaxSize)
       monomialsExtend();
@@ -173,7 +185,7 @@ void Polynomial::monomialsMove(int pos, int rel) {
             (monomialsCount - pos) * sizeof(monomials[pos]));
     monomialsCount++;
   } else if (rel == -1) {
-    Ring *remove = monomials[pos].coeff;
+    R *remove = monomials[pos].coeff;
     memmove(&monomials[pos], &monomials[pos + 1],
             (monomialsCount - pos) * sizeof(monomials[pos]));
     delete remove;
@@ -183,7 +195,8 @@ void Polynomial::monomialsMove(int pos, int rel) {
   }
 }
 
-void Polynomial::monomialsInsert(Monomial monomial, int position) {
+template<class R>
+void Polynomial<R>::monomialsInsert(Monomial monomial, int position) {
   if (position == monomialsCount) {
     if (monomialsCount == monomialsMaxSize)
       monomialsExtend();
@@ -194,7 +207,8 @@ void Polynomial::monomialsInsert(Monomial monomial, int position) {
   monomials[position] = monomial;
 }
 
-int Polynomial::compareExpt(const int *lhs, const int *rhs) const {
+template<class R>
+int Polynomial<R>::compareExpt(const int *lhs, const int *rhs) const {
   for (int i = 0; i < variableCount; ++i) {
     if (lhs[i] < rhs[i])
       return -(variableCount - i);
@@ -205,7 +219,8 @@ int Polynomial::compareExpt(const int *lhs, const int *rhs) const {
   return 0;
 }
 
-int Polynomial::monomialsPos(int *exps) {
+template<class R>
+int Polynomial<R>::monomialsPos(int *exps) {
   for (int i = 0; i < monomialsCount; ++i) {
     if (compareExpt(monomials[i].exps, exps) <= 0)
       return i;

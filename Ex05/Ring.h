@@ -26,12 +26,12 @@ public:
   virtual std::string str() = 0;
 
   // the constant zero of the type of this element
-  virtual Ring *zero() = 0;
+  Ring *zero();
 
   // sum and product of this element and c
-  virtual Ring *operator+(Ring *c) = 0;
+  Ring *operator+(Ring *c);
   //virtual Ring* operator*(Ring* c) = 0;
 
   // comparison functions
-  virtual bool operator==(Ring *c) = 0;
+  bool operator==(Ring *c);
 };

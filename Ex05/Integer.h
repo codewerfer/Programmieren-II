@@ -10,6 +10,11 @@
 #pragma once
 
 #include "Ring.h"
+#include "Polynomial.cpp"
+
+// forward declarations
+class Integer;
+typedef Polynomial<Integer> IntPoly;
 
 /**
  * Integer class,
@@ -27,14 +32,16 @@ public:
   ~Integer() {}
 
   // std::string representation of Integer
-  std::string str() override;
+  std::string str();
 
   // Integer(0)
-  Ring *zero() override;
+  Integer *zero();
 
   // adds other Integer c to this
-  Ring *operator+(Ring *c) override;
+  Integer *operator+(Ring *c);
 
   // compare of 2 rings.
-  bool operator==(Ring *c) override;
+  bool operator==(Ring *c);
 };
+
+

@@ -15,11 +15,11 @@ std::string Integer::str() {
   return std::to_string(n);
 }
 
-Ring *Integer::zero() {
+Integer *Integer::zero() {
   return new Integer(0);
 }
 
-Ring *Integer::operator+(Ring *c) {
+Integer *Integer::operator+(Ring *c) {
   if (typeid(*this) != typeid(*c)) {
     throw std::runtime_error("Added not defined for different types");
   }
