@@ -2,6 +2,8 @@
  * Integer.h
  * Header file for Integer class
  *
+ * Integer doesn't know Polynomial<Integer> exists.
+ *
  * Author: Jürgen Vogl <k1355432>
  * Last Modification: 23.05.2019
  *
@@ -10,11 +12,6 @@
 #pragma once
 
 #include "Ring.h"
-#include "Polynomial.cpp"
-
-// forward declarations
-class Integer;
-typedef Polynomial<Integer> IntPoly;
 
 /**
  * Integer class,

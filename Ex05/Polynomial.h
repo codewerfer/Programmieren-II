@@ -2,6 +2,8 @@
  * Polynomial.h
  * Header file for Polynomial class
  *
+ * Polynomial knows about Integer, but not about Rational.
+ *
  * Author: Jürgen Vogl <k1355432>
  * Last Modification: 23.05.2019
  *
@@ -23,8 +25,7 @@
  * a1, b1, ..:  exps of integer type (pointers)
  */
 template<class R>
-class Polynomial : public Ring
-{
+class Polynomial : public Ring {
   /**
    * Monomial struct
    *
@@ -41,7 +42,7 @@ class Polynomial : public Ring
     Monomial() : coeff(nullptr), exps(nullptr) {}
 
     Monomial(R *coeff, int *exps, int count)
-        : coeff(coeff), exps(exps), count(count) {}
+            : coeff(coeff), exps(exps), count(count) {}
 
     int count; // must be set to variableCount
 
@@ -91,16 +92,16 @@ public:
   // Polynomial& operator=(const Polynomial& polynomial);
 
   // Polynom as std::string
-  std::string str() ;
+  std::string str();
 
   // Zero representation of polynom
-  Polynomial *zero() ;
+  Polynomial *zero();
 
   // adds Polynomial c to this Polynomial
-  Polynomial *operator+(Polynomial<R> *c) ;
+  Polynomial *operator+(Polynomial<R> *c);
 
   // compares 2 polynoms
-  bool operator==(Polynomial<R> *c) ;
+  bool operator==(Polynomial<R> *c);
 
 private:
   // add new term with given coefficient and exponents to this polynomial
