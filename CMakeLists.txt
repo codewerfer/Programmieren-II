@@ -2,6 +2,8 @@
 
 project("ProgrammierenII" CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+
 #set(BUILD_SHARED_LIBS OFF)
 #if (NOT BUILD_SHARED_LIBS)
 #    message("Turn on gtest_force_shared_crt")
