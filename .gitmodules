@@ -2,3 +2,6 @@
 	path = gtest
 	url = https://github.com/google/googletest.git
 	branch = release-1.8.1
+[submodule "Drawing/CImg"]
+	path = Drawing/CImg
+	url = https://github.com/dtschump/CImg.git
