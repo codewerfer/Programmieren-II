@@ -18,10 +18,10 @@ set(CMAKE_CXX_STANDARD 17)
 #gtest
 #add_subdirectory("gtest")
 
-#add_subdirectory("Drawing")
-#add_subdirectory("DrawingTest")
+add_subdirectory("Drawing")
+add_subdirectory("DrawingTest")
 #add_subdirectory("Ex01")
 #add_subdirectory("Ex02")
 #add_subdirectory("Ex03")
 #add_subdirectory("Ex04")
-add_subdirectory("Ex05")
+#add_subdirectory("Ex05")

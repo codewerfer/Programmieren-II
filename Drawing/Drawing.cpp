@@ -19,7 +19,7 @@
  *****************************************************************************/
 
 // download from http://cimg.sourceforge.net
-#include "CImg.h"
+#include "CImg/CImg.h"
 
 /*****************************************************************************
  * See the CImg documentation section 6.1.3 "How to compile?"
