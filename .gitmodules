@@ -5,3 +5,4 @@
 [submodule "Drawing/CImg"]
 	path = Drawing/CImg
 	url = https://github.com/dtschump/CImg.git
+	branch = v.2.4.5
