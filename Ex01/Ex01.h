@@ -19,8 +19,6 @@
 #pragma once
 
 #include <iostream>
-//#include <cstdlib>
-//#include <cmath>
 #include <fstream>
 
 #ifdef SLOWDOWN
@@ -31,6 +29,8 @@
 // windows specific
 #ifdef _WIN32
 
+#include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <ctime>
 

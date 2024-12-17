@@ -34,8 +34,9 @@
 
 #include <sstream>
 
-#ifndef _WIN32
+#ifdef _WIN32
 
+#include <cstdint>
 #include <cmath>
 
 #endif

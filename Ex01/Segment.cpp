@@ -42,7 +42,7 @@ float Q_rsqrt(float number) {
 double invsqrtQuake(double number) {
   double y = number;
   double x2 = y * 0.5;
-  std::int64_t i = *(std::int64_t *) &y;
+  int64_t i = *(int64_t *) &y;
   // The magic number is for doubles is from
   // https://cs.uwaterloo.ca/~m32rober/rsqrt.pdf
   i = 0x5fe6eb50c7b537a9 - (i >> 1);
